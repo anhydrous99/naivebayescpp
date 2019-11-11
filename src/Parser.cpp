@@ -5,13 +5,25 @@
 #include "Parser.h"
 #include <regex>
 #include <random>
+#include <fstream>
 #include <algorithm>
 #include <iostream>
 #include <streambuf>
 #include <stdexcept>
-#include <boost/filesystem.hpp>
 
-namespace fs = boost::filesystem;
+#if __has_include(<filesystem>)
+#include <filesystem>
+#define HAS_FS
+#else
+#include <experimental/filesystem>
+#endif
+
+#ifdef HAS_FS
+namespace fs = std::filesystem;
+#else
+namespace fs = std::experimental::filesystem;
+#endif
+
 using namespace std;
 
 static string read_file(const fs::path& p) {
