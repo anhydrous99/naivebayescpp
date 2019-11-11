@@ -13,14 +13,9 @@
 
 #if __has_include(<filesystem>)
 #include <filesystem>
-#define HAS_FS
-#else
-#include <experimental/filesystem>
-#endif
-
-#ifdef HAS_FS
 namespace fs = std::filesystem;
 #else
+#include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 #endif
 
