@@ -3,6 +3,7 @@
 //
 
 #include "WordMatrix.h"
+#include <queue>
 #include <iostream>
 #include <set>
 
@@ -108,13 +109,14 @@ unsigned WordMatrix::getCount(const std::vector<std::string> &clss, std::vector<
 }
 
 WordMatrix WordMatrix::block(const std::vector<std::string> &clss, const std::vector<std::string> &wrds) {
-    MatrixXi new_mat(clss.size(), wrds.size());
+    unsigned long n = clss.size(), m = wrds.size();
+    MatrixXi new_mat(n, m);
     map<string, unsigned> new_class_map;
     map<string, unsigned> new_word_map;
 
-    for (unsigned long i = 0; i < clss.size(); i++) {
+    for (unsigned long i = 0; i < n; i++) {
         new_class_map[clss[i]] = i;
-        for (unsigned long j = 0; i < wrds.size(); j++) {
+        for (unsigned long j = 0; j < m; j++) {
             if (i == 0)
                 new_word_map[wrds[j]] = j;
 
@@ -167,9 +169,38 @@ void WordMatrix::printProbabilities(std::ostream &ostr) {
 }
 
 void WordMatrix::printProbabilities() {
-    printFrequency(cout);
+    printProbabilities(cout);
 }
 
 void WordMatrix::printFrequency() {
     printFrequency(cout);
+}
+
+WordMatrix WordMatrix::getMostFrequent(unsigned long n) {
+    unsigned long new_n = n / classes.size();
+    vector<string> used;
+    for (const auto& class_pair : classes) {
+        auto cmp = [&](const string &word1, const string &word2) {
+            return getCount(class_pair.first, word1) < getCount(class_pair.first, word2);
+        };
+
+        priority_queue<string, vector<string>, decltype(cmp)> queue(cmp);
+        for (const auto &word_pair : words) {
+            if (find(used.begin(), used.end(), word_pair.first) == used.end()) {
+                queue.push(word_pair.first);
+            }
+        }
+
+        for (unsigned long i = 0; i < new_n; i++) {
+            used.push_back(queue.top());
+            queue.pop();
+        }
+    }
+
+    vector<string> clss;
+    for (auto & cls_pair : classes) {
+        clss.push_back(cls_pair.first);
+    }
+
+    return block(clss, used);
 }

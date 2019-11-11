@@ -20,6 +20,7 @@ class WordMatrix {
 
     template <typename T, int N, int M>
     void print_matrix(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat);
+    void remove_word(const std::string &word);
 public:
     explicit WordMatrix(const std::vector<Item> &items);
     WordMatrix(const MatrixXi &word_count, const std::map<std::string, unsigned> &classes,
@@ -39,6 +40,7 @@ public:
     void printFrequency(std::ostream &ostr);
     void printProbabilities();
     void printFrequency();
+    WordMatrix getMostFrequent(unsigned long n);
 };
 
 // ---- Template Function Implementations ----
