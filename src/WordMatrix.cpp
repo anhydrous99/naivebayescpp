@@ -19,29 +19,29 @@ WordMatrix::WordMatrix(const std::vector<Item> &items) {
     // Get list of words and classes using set to find the size of the matrix
     set<string> class_list;
     set<string> word_list;
-    for (const Item& itm : items) {
+    for (const Item &itm : items) {
         class_list.insert(itm.collection);
-        for (const auto& word_pair : itm.word_count) {
+        for (const auto &word_pair : itm.word_count) {
             word_list.insert(word_pair.first);
         }
     }
 
     // Create index maps, maps strings to the matrix's indexes
     int i = 0;
-    for (const string& cls : class_list) {
+    for (const string &cls : class_list) {
         classes[cls] = i;
         i++;
     }
     i = 0;
-    for (const string& word : word_list) {
+    for (const string &word : word_list) {
         words[word] = i;
         i++;
     }
 
     // Build matrix
     word_count = MatrixXi::Zero(class_list.size(), word_list.size());
-    for (const Item& itm : items) {
-        for (const auto& word_pair : itm.word_count) {
+    for (const Item &itm : items) {
+        for (const auto &word_pair : itm.word_count) {
             word_count(classes[itm.collection], words[word_pair.first]) += word_pair.second;
         }
     }
@@ -85,7 +85,7 @@ unsigned WordMatrix::getCount(const std::string &cls, const std::string &word) {
 
 unsigned WordMatrix::getCount(const std::vector<std::string> &clss, const std::string &word) {
     unsigned count = 0;
-    for (const string& cls : clss) {
+    for (const string &cls : clss) {
         count += getCount(cls, word);
     }
     return count;
@@ -93,7 +93,7 @@ unsigned WordMatrix::getCount(const std::vector<std::string> &clss, const std::s
 
 unsigned WordMatrix::getCount(const std::string &cls, const std::vector<std::string> &wrds) {
     unsigned count = 0;
-    for (const string& word : wrds) {
+    for (const string &word : wrds) {
         count += getCount(cls, word);
     }
     return count;
@@ -101,7 +101,7 @@ unsigned WordMatrix::getCount(const std::string &cls, const std::vector<std::str
 
 unsigned WordMatrix::getCount(const std::vector<std::string> &clss, std::vector<std::string> &wrds) {
     unsigned count = 0;
-    for (const string& cls : clss) {
+    for (const string &cls : clss) {
         count += getCount(cls, wrds);
     }
     return count;
@@ -133,7 +133,7 @@ WordMatrix WordMatrix::block(const std::vector<std::string> &clss) {
         new_class_map[clss[i]] = i;
 
     int i = 0;
-    for (const auto& word_pair : words) {
+    for (const auto &word_pair : words) {
         if (getCount(clss, word_pair.first) != 0) {
             new_word_map[word_pair.first] = i;
             i++;
@@ -141,8 +141,8 @@ WordMatrix WordMatrix::block(const std::vector<std::string> &clss) {
     }
 
     MatrixXi new_mat(new_class_map.size(), new_word_map.size());
-    for (const auto& class_pair : new_class_map) {
-        for (const auto& word_pair : new_word_map) {
+    for (const auto &class_pair : new_class_map) {
+        for (const auto &word_pair : new_word_map) {
             new_mat(class_pair.second, word_pair.second) = getCount(class_pair.first, word_pair.first);
         }
     }
@@ -150,18 +150,24 @@ WordMatrix WordMatrix::block(const std::vector<std::string> &clss) {
 }
 
 void WordMatrix::printFrequency(std::ostream &ostr) {
-    ostr << "word,";
-    for (const auto& cls_pair : classes) {
-        ostr << cls_pair.first << ',';
-    }
-    ostr << endl;
-    for (const auto& word_pair : words) {
-        ostr << word_pair.first << ',';
-        for (const auto& cls_pair : classes) {
-            ostr << word_count(cls_pair.second, word_pair.second) << ',';
+    print_matrix(ostr, word_count);
+}
+
+void WordMatrix::printProbabilities(std::ostream &ostr) {
+    Eigen::MatrixXd prob_mat(classes.size(), words.size());
+    for (const auto &class_pair : classes) {
+        double class_total = static_cast<double>(word_count.row(class_pair.second).sum());
+        for (const auto &word_pair : words) {
+            prob_mat(class_pair.second, word_pair.second) =
+                    static_cast<double>(word_count(class_pair.second, word_pair.second)) / class_total;
         }
-        ostr << endl;
     }
+
+    print_matrix(ostr, prob_mat);
+}
+
+void WordMatrix::printProbabilities() {
+    printFrequency(cout);
 }
 
 void WordMatrix::printFrequency() {
