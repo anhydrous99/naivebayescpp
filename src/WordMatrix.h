@@ -32,6 +32,8 @@ public:
     unsigned getCount(const std::vector<std::string> &clss, std::vector<std::string> &wrds);
     WordMatrix block(const std::vector<std::string> &clss, const std::vector<std::string> &wrds);
     WordMatrix block(const std::vector<std::string> &clss);
+    void printFrequency(std::ostream &ostr);
+    void printFrequency();
 };
 
 

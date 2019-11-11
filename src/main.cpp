@@ -16,5 +16,6 @@ int main(int argc, char **argv) {
     cout << "Generating word matrix!\n";
     WordMatrix mat = p.getMatrix();
     cout << "Total words: " << mat.getTotalWords() << endl;
+    mat.printFrequency();
     return EXIT_SUCCESS;
 }

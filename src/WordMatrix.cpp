@@ -148,3 +148,22 @@ WordMatrix WordMatrix::block(const std::vector<std::string> &clss) {
     }
     return WordMatrix(new_mat, new_class_map, new_word_map);
 }
+
+void WordMatrix::printFrequency(std::ostream &ostr) {
+    ostr << "word,";
+    for (const auto& cls_pair : classes) {
+        ostr << cls_pair.first << ',';
+    }
+    ostr << endl;
+    for (const auto& word_pair : words) {
+        ostr << word_pair.first << ',';
+        for (const auto& cls_pair : classes) {
+            ostr << word_count(cls_pair.second, word_pair.second) << ',';
+        }
+        ostr << endl;
+    }
+}
+
+void WordMatrix::printFrequency() {
+    printFrequency(cout);
+}
