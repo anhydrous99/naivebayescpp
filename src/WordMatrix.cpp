@@ -4,6 +4,7 @@
 
 #include "WordMatrix.h"
 #include <iostream>
+#include <iterator>
 #include <set>
 
 using namespace std;
@@ -47,6 +48,16 @@ WordMatrix::WordMatrix(const std::vector<Item> &items) {
     }
 }
 
-unsigned int WordMatrix::getTotalWords() {
+unsigned WordMatrix::getTotalWords() {
     return word_count.sum();
+}
+
+unsigned WordMatrix::getClassTotal(const std::string &cls) {
+    unsigned index = classes[cls];
+    return word_count.row(index).sum();
+}
+
+unsigned WordMatrix::getWordTotal(const std::string &word) {
+    unsigned index = words[word];
+    return word_count.col(index).sum();
 }

@@ -62,7 +62,7 @@ Parser::Parser(const string &path) {
             }
 
             // Get classification
-            itm.collection = itm.headers["Newsgroups"];
+            itm.collection = tmp.parent_path().filename().string();
 
             // Count words
             boost::regex expr{"([^\\W_0123456789])+"};
