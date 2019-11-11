@@ -3,12 +3,12 @@
 //
 
 #include "Parser.h"
+#include <regex>
 #include <random>
 #include <algorithm>
 #include <iostream>
 #include <streambuf>
 #include <stdexcept>
-#include <boost/regex.hpp>
 #include <boost/filesystem.hpp>
 
 namespace fs = boost::filesystem;
@@ -66,11 +66,11 @@ Parser::Parser(const string &path) {
             itm.collection = tmp.parent_path().filename().string();
 
             // Count words
-            boost::regex expr{"([^\\W_0123456789])+"};
-            boost::regex_token_iterator<std::string::iterator> regit{txt.begin(), txt.end(), expr};
-            boost::regex_token_iterator<std::string::iterator> end;
+            regex expr("([^\\W_0123456789])+");
+            auto regit = sregex_iterator(txt.begin(), txt.end(), expr);
+            auto end = sregex_iterator();
             while (regit != end) {
-                std::string word = (*regit++);
+                std::string word = (*regit++).str();
                 // If word is a stop word ignore
                 if (std::find(stop_words.begin(), stop_words.end(), word) != stop_words.end())
                     continue;
