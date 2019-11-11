@@ -20,3 +20,6 @@ int main(int argc, char **argv) {
     mat1.printFrequency();
     return EXIT_SUCCESS;
 }
+
+// TODO: create a way to use only a certain number of text files
+// TODO: create test cases
