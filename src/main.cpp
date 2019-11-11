@@ -11,6 +11,7 @@ int main(int argc, char **argv) {
     // Parse files
     cout << "Parsing text files!\n";
     Parser p((string(argv[1])));
+    p.prune_per_class(10);
 
     // Create a word matrix
     cout << "Generating word matrix!\n";
@@ -21,5 +22,4 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-// TODO: create a way to use only a certain number of text files
 // TODO: create test cases

@@ -14,6 +14,7 @@ class Parser {
 public:
     explicit Parser(const std::string &path);
     WordMatrix getMatrix();
+    void prune_per_class(unsigned long max_per_classes);
 };
 
 

@@ -3,6 +3,7 @@
 //
 
 #include "Parser.h"
+#include <random>
 #include <algorithm>
 #include <iostream>
 #include <streambuf>
@@ -87,4 +88,28 @@ Parser::Parser(const string &path) {
 
 WordMatrix Parser::getMatrix() {
     return WordMatrix(items);
+}
+
+void Parser::prune_per_class(unsigned long max_per_classes) {
+    random_device r;
+    mt19937 gen(r());
+
+    vector<unsigned long> indices(items.size());
+    iota(indices.begin(), indices.end(), 0);
+    shuffle(indices.begin(), indices.end(), gen);
+
+    map<string, unsigned long> item_count;
+    vector<Item> new_items;
+    for (const auto& itm : items) {
+        auto itr = item_count.find(itm.collection);
+        if (itr != item_count.end()) {
+            if (itr->second != max_per_classes) {
+                new_items.push_back(itm);
+                itr->second++;
+            }
+        } else {
+            item_count[itm.collection];
+        }
+    }
+    items = new_items;
 }
