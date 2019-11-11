@@ -41,7 +41,7 @@ public:
     void printFrequency();
 };
 
-// ---- Template Function Implementation ----
+// ---- Template Function Implementations ----
 
 template <typename T, int N, int M>
 void WordMatrix::print_matrix(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat) {
