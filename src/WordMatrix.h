@@ -24,6 +24,14 @@ public:
     unsigned getTotalWords();
     unsigned getClassTotal(const std::string &cls);
     unsigned getWordTotal(const std::string &word);
+    unsigned getClassTotal(const std::vector<std::string> &clss);
+    unsigned getWordTotal(const std::vector<std::string> &words);
+    unsigned getCount(const std::string &clss, const std::string &word);
+    unsigned getCount(const std::vector<std::string> &cls, const std::string &word);
+    unsigned getCount(const std::string &cls, const std::vector<std::string> &wrds);
+    unsigned getCount(const std::vector<std::string> &clss, std::vector<std::string> &wrds);
+    WordMatrix block(const std::vector<std::string> &clss, const std::vector<std::string> &wrds);
+    WordMatrix block(const std::vector<std::string> &clss);
 };
 
 
