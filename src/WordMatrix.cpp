@@ -204,3 +204,27 @@ WordMatrix WordMatrix::getMostFrequent(unsigned long n) {
 
     return block(clss, used);
 }
+
+void WordMatrix::printLatexProbabilities(std::ostream &ostr) {
+  Eigen::MatrixXd prob_mat(classes.size(), words.size());
+  for (const auto &class_pair : classes) {
+    double class_total = static_cast<double>(word_count.row(class_pair.second).sum());
+    for (const auto &word_pair : words) {
+      prob_mat(class_pair.second, word_pair.second) =
+          static_cast<double>(word_count(class_pair.second, word_pair.second)) / class_total;
+    }
+  }
+  print_latex(ostr, prob_mat);
+}
+
+void WordMatrix::printLatexFrequency(std::ostream &ostr) {
+  print_latex(ostr, word_count);
+}
+
+void WordMatrix::printLatexProbabilities() {
+  printLatexProbabilities(cout);
+}
+
+void WordMatrix::printLatexFrequency() {
+  printLatexFrequency(cout);
+}

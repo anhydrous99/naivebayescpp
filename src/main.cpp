@@ -66,18 +66,18 @@ int main(int argc, char **argv) {
     cout << "Calculating frequencies and probabilities\n";
 
     // Print frequencies for these sub-matrices
-    submat_test1.printFrequency(test1_oss);
-    submat_test2.printFrequency(test2_oss);
-    submat_test3.printFrequency(test3_oss);
+    submat_test1.printLatexFrequency(test1_oss);
+    submat_test2.printLatexFrequency(test2_oss);
+    submat_test3.printLatexFrequency(test3_oss);
 
     test1_oss << endl;
     test2_oss << endl;
     test3_oss << endl;
 
     // Print probabilites for the sub-matrices
-    submat_test1.printProbabilities(test1_oss);
-    submat_test2.printProbabilities(test2_oss);
-    submat_test3.printProbabilities(test3_oss);
+    submat_test1.printLatexProbabilities(test1_oss);
+    submat_test2.printLatexProbabilities(test2_oss);
+    submat_test3.printLatexProbabilities(test3_oss);
 
     test1_oss << endl;
     test2_oss << endl;

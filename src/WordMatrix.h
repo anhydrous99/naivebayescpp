@@ -20,6 +20,10 @@ class WordMatrix {
 
     template <typename T, int N, int M>
     void print_matrix(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat);
+
+    template <typename T, int N, int M>
+    void print_latex(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat);
+
     void remove_word(const std::string &word);
 public:
     explicit WordMatrix(const std::vector<Item> &items);
@@ -40,6 +44,10 @@ public:
     void printFrequency(std::ostream &ostr);
     void printProbabilities();
     void printFrequency();
+    void printLatexProbabilities(std::ostream &ostr);
+    void printLatexFrequency(std::ostream &ostr);
+    void printLatexProbabilities();
+    void printLatexFrequency();
     WordMatrix getMostFrequent(unsigned long n);
 };
 
@@ -59,6 +67,28 @@ void WordMatrix::print_matrix(std::ostream &ostr, const Eigen::Matrix<T, N, M> &
         }
         ostr << '\n';
     }
+}
+
+template <typename T, int N, int M>
+void WordMatrix::print_latex(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat) {
+  long rows = mat.rows();
+  long cols = mat.cols();
+  ostr << "\\begin{center}\n\\begin{tabular}{|| c ";
+  for (long i = 0; i < cols; i++)
+    ostr << "c ";
+  ostr << "||}\n\\hline\n";
+  ostr << "word";
+  for (const auto &cls_pair : classes)
+    ostr << " & " << cls_pair.first;
+  ostr << " \\\\ [0.5x]\n\\hline\\hline\n";
+  for (const auto &word_pair : words) {
+    ostr << word_pair.first;
+    for (const auto &cls_pair : classes) {
+      ostr << " & " << mat(cls_pair.second, word_pair.second);
+    }
+    ostr << " \\\\ \\hline \n";
+  }
+  ostr << "\\end{tabular}\\end{center}\n";
 }
 
 #endif //NAIVEBAYESCPP_WORDMATRIX_H
