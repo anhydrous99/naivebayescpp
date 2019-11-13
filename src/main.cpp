@@ -26,14 +26,14 @@ int main(int argc, char **argv) {
 
     // Randomly choose classes/categories
     vector<string> classes(p.get_classes());
-    auto c_begin = classes.begin();
-    auto c_end = classes.end();
-    shuffle(c_begin, c_end, g);
-    vector<string> test1_classes(c_begin, (c_begin + 5));
-    shuffle(c_begin, c_end, g);
-    vector<string> test2_classes(c_begin, (c_begin + 5));
-    shuffle(c_begin, c_end, g);
-    vector<string> test3_classes(c_begin, (c_begin + 10));
+    auto itr_begin = classes.begin();
+    auto itr_end = classes.end();
+    shuffle(itr_begin, itr_end, g);
+    vector<string> test1_classes(itr_begin, (itr_begin + 5));
+    shuffle(itr_begin, itr_end, g);
+    vector<string> test2_classes(itr_begin, (itr_begin + 5));
+    shuffle(itr_begin, itr_end, g);
+    vector<string> test3_classes(itr_begin, (itr_begin + 10));
 
     cout << "Prunning number of text files per class!\n";
 
@@ -59,41 +59,35 @@ int main(int argc, char **argv) {
     submat_test3 = submat_test3.getMostFrequent(50);
 
     // Create stringstreams for save to files and printing
-    ostringstream test1_freq;
-    ostringstream test2_freq;
-    ostringstream test3_freq;
-    ostringstream test1_prob;
-    ostringstream test2_prob;
-    ostringstream test3_prob;
+    ostringstream test1_oss;
+    ostringstream test2_oss;
+    ostringstream test3_oss;
 
     cout << "Calculating frequencies and probabilities\n";
 
     // Print frequencies for these sub-matrices
-    submat_test1.printFrequency(test1_freq);
-    submat_test2.printFrequency(test2_freq);
-    submat_test3.printFrequency(test3_freq);
+    submat_test1.printFrequency(test1_oss);
+    submat_test2.printFrequency(test2_oss);
+    submat_test3.printFrequency(test3_oss);
+
+    test1_oss << endl;
+    test2_oss << endl;
+    test3_oss << endl;
 
     // Print probabilites for the sub-matrices
-    submat_test1.printProbabilities(test1_prob);
-    submat_test2.printProbabilities(test2_prob);
-    submat_test3.printProbabilities(test3_prob);
+    submat_test1.printProbabilities(test1_oss);
+    submat_test2.printProbabilities(test2_oss);
+    submat_test3.printProbabilities(test3_oss);
+
+    test1_oss << endl;
+    test2_oss << endl;
+    test3_oss << endl;
 
     cout << "Frequencies & Probabilites: \n";
-    string test1_freq_str = test1_freq.str();
-    string test2_freq_str = test2_freq.str();
-    string test3_freq_str = test3_freq.str();
-    string test1_prob_str = test1_prob.str();
-    string test2_prob_str = test2_prob.str();
-    string test3_prob_str = test3_prob.str();
+    string test1_str = test1_oss.str();
+    string test2_str = test2_oss.str();
+    string test3_str = test3_oss.str();
 
-    cout << test1_freq_str << endl <<
-    test2_freq_str << endl <<
-    test3_freq_str << endl <<
-    test1_prob_str << endl <<
-    test2_prob_str << endl <<
-    test3_prob_str;
-
+    cout << test1_str << endl << test2_str << endl << test3_str;
     return EXIT_SUCCESS;
 }
-
-// TODO: create test cases
