@@ -73,6 +73,9 @@ Parser::Parser(const string &path) {
             // Get classification
             itm.collection = tmp.parent_path().filename().string();
 
+            if (itm.collection == "mini_newsgroup")
+              continue;
+
             // Count words
             regex expr("([^\\W_0123456789])+");
             auto regit = sregex_iterator(txt.begin(), txt.end(), expr);

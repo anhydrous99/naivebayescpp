@@ -1,14 +1,28 @@
 #include "Parser.h"
 #include <iostream>
+#include <fstream>
 #include <random>
 
 using namespace std;
 
+void print_to_file(const string &to_print, const string &path) {
+  ofstream ostrm(path);
+  ostrm << to_print;
+}
+
 int main(int argc, char **argv) {
-    if (argc != 2) {
-        cerr << "Error: not enough arguments\n";
+    if (argc < 2 || argc > 3) {
+        cerr << "Error: not enough arguments or to many arguments\n";
         return EXIT_FAILURE;
     }
+
+    bool print_latex = false;
+    if (argc == 3) {
+      if (string(argv[2]) == "latex") {
+        print_latex = true;
+      }
+    }
+
     // Parse files
     cout << "Parsing text files!\n";
 
@@ -65,19 +79,31 @@ int main(int argc, char **argv) {
 
     cout << "Calculating frequencies and probabilities\n";
 
-    // Print frequencies for these sub-matrices
-    submat_test1.printLatexFrequency(test1_oss);
-    submat_test2.printLatexFrequency(test2_oss);
-    submat_test3.printLatexFrequency(test3_oss);
+    if (print_latex) {
+      // Print frequencies for these sub-matrices
+      submat_test1.printLatexFrequency(test1_oss);
+      submat_test2.printLatexFrequency(test2_oss);
+      submat_test3.printLatexFrequency(test3_oss);
+    } else {
+      submat_test1.printFrequency(test1_oss);
+      submat_test2.printFrequency(test2_oss);
+      submat_test3.printFrequency(test3_oss);
+    }
 
     test1_oss << endl;
     test2_oss << endl;
     test3_oss << endl;
 
-    // Print probabilites for the sub-matrices
-    submat_test1.printLatexProbabilities(test1_oss);
-    submat_test2.printLatexProbabilities(test2_oss);
-    submat_test3.printLatexProbabilities(test3_oss);
+    if (print_latex) {
+      // Print probabilites for the sub-matrices
+      submat_test1.printLatexProbabilities(test1_oss);
+      submat_test2.printLatexProbabilities(test2_oss);
+      submat_test3.printLatexProbabilities(test3_oss);
+    } else {
+      submat_test1.printProbabilities(test1_oss);
+      submat_test2.printProbabilities(test2_oss);
+      submat_test3.printProbabilities(test3_oss);
+    }
 
     test1_oss << endl;
     test2_oss << endl;
@@ -87,6 +113,12 @@ int main(int argc, char **argv) {
     string test1_str = test1_oss.str();
     string test2_str = test2_oss.str();
     string test3_str = test3_oss.str();
+
+    if (!print_latex) {
+      print_to_file(test1_str, "test1.csv");
+      print_to_file(test2_str, "test2.csv");
+      print_to_file(test3_str, "test3.csv");
+    }
 
     cout << test1_str << endl << test2_str << endl << test3_str;
     return EXIT_SUCCESS;
