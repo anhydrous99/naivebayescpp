@@ -73,7 +73,7 @@ Parser::Parser(const string &path) {
             // Get classification
             itm.collection = tmp.parent_path().filename().string();
 
-            if (itm.collection == "mini_newsgroup")
+            if (itm.collection == "mini_newsgroups")
               continue;
 
             // Count words
