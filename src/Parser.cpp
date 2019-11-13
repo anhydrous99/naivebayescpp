@@ -4,6 +4,7 @@
 
 #include "Parser.h"
 #include <regex>
+#include <set>
 #include <random>
 #include <fstream>
 #include <algorithm>
@@ -95,6 +96,15 @@ Parser::Parser(const string &path) {
 
 WordMatrix Parser::getMatrix() {
     return WordMatrix(items);
+}
+
+vector<string> Parser::get_classes() {
+  set<string> preoutput;
+  for (const auto& itm : items) {
+    preoutput.insert(itm.collection);
+  }
+  vector<string> output(preoutput.begin(), preoutput.end());
+  return output;
 }
 
 void Parser::prune_per_class(unsigned long max_per_classes) {
