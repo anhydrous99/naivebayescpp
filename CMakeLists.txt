@@ -11,8 +11,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 hunter_add_package(Eigen)
+hunter_add_package(Boost COMPONENTS filesystem)
 find_package(Eigen3 CONFIG REQUIRED)
+find_package(Boost CONFIG REQUIRED filesystem)
 
 add_executable(naivebayescpp src/main.cpp src/Parser.cpp src/Parser.h src/WordMatrix.cpp src/WordMatrix.h src/Item.h)
-target_link_libraries(naivebayescpp Eigen3::Eigen stdc++fs)
+target_link_libraries(naivebayescpp Eigen3::Eigen Boost::filesystem)
 configure_file(${CMAKE_SOURCE_DIR}/stop_words.txt ${CMAKE_BINARY_DIR}/stop_words.txt)

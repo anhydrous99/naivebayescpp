@@ -6,20 +6,13 @@
 #include <regex>
 #include <set>
 #include <random>
-#include <fstream>
 #include <algorithm>
 #include <iostream>
 #include <streambuf>
 #include <stdexcept>
+#include <boost/filesystem.hpp>
 
-#if __has_include(<filesystem>)
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#endif
-
+namespace fs = boost::filesystem;
 using namespace std;
 
 static string read_file(const fs::path& p) {
