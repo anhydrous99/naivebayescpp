@@ -12,7 +12,7 @@
 #include <streambuf>
 #include <stdexcept>
 
-#if __cplusplus > 201702L
+#if __cplusplus > 201402L
 #include <filesystem>
 namespace fs = std::filesystem;
 #else
