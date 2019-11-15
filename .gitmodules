@@ -5,3 +5,9 @@
 [submodule "extern/curl"]
 	path = extern/curl
 	url = https://github.com/curl/curl
+[submodule "extern/json"]
+	path = extern/json
+	url = https://github.com/nlohmann/json
+[submodule "extern/cxxopts"]
+	path = extern/cxxopts
+	url = https://github.com/jarro2783/cxxopts
