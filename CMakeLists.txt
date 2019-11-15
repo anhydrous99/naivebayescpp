@@ -4,6 +4,11 @@ project(naivebayescpp)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# For brew installed openssl
+if (APPLE)
+    set(OPENSSL_ROOT_DIR /usr/local/opt/openssl)
+endif ()
+
 set(JSON_BuildTests OFF CACHE BOOL "Build nlohmann's json tests" FORCE)
 add_subdirectory(extern/eigen-git-mirror)
 add_subdirectory(extern/curl)
