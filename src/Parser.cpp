@@ -6,13 +6,20 @@
 #include <regex>
 #include <set>
 #include <random>
+#include <fstream>
 #include <algorithm>
 #include <iostream>
 #include <streambuf>
 #include <stdexcept>
-#include <boost/filesystem.hpp>
 
-namespace fs = boost::filesystem;
+#if __has_include(<filesystem>)
+#include <filesystem>
+namespace fs = std::filesystem;
+#else
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#endif
+
 using namespace std;
 
 static string read_file(const fs::path& p) {
@@ -108,7 +115,12 @@ void Parser::prune_per_class(unsigned long max_per_classes) {
     mt19937 gen(r());
 
     vector<unsigned long> indices(items.size());
+#ifdef __linux__
     iota(indices.begin(), indices.end(), 0);
+#elif __WIN32
+    for (int i = 0; i < indices.size(); i++)
+        indices[i] =i;
+#endif
     shuffle(indices.begin(), indices.end(), gen);
 
     map<string, unsigned long> item_count;
