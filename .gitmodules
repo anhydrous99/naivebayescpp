@@ -2,3 +2,6 @@
 	path = extern/eigen-git-mirror
 	url = https://github.com/eigenteam/eigen-git-mirror
 	branch = branches/3.3
+[submodule "extern/curl"]
+	path = extern/curl
+	url = https://github.com/curl/curl
