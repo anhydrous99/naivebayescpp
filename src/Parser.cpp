@@ -12,10 +12,11 @@
 #include <streambuf>
 #include <stdexcept>
 
-#if __has_include(<filesystem>)
+#if __cplusplus > 201702L
 #include <filesystem>
 namespace fs = std::filesystem;
 #else
+#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 #endif
