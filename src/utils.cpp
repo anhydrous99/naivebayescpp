@@ -8,6 +8,7 @@
 #include <fstream>
 #include "Parser.h"
 #include "WordMatrix.h"
+
 using namespace std;
 
 void print_to_file(const string &to_print, const string &path) {
@@ -15,7 +16,7 @@ void print_to_file(const string &to_print, const string &path) {
   ostrm << to_print;
 }
 
-void part1(const string& newgroup_path, bool print_latex) {
+void part1(const string &newgroup_path, bool print_latex) {
   // Parse files
   cout << "Parsing text files!\n";
 

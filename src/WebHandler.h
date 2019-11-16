@@ -11,14 +11,15 @@
 #include <map>
 
 class WebHandler {
-    std::string url = "https://newsapi.org/v2/top-headlines?";
-    std::string apikey;
+  std::string url = "https://newsapi.org/v2/top-headlines?";
+  std::string apikey;
 
-    std::string Call(const std::string& uri);
-    std::string Call(const std::map<std::string, std::string>& args);
+  std::string Call(const std::string &uri);
+  std::string Call(const std::map<std::string, std::string> &args);
+
 public:
-    explicit WebHandler(std::string key);
-    std::vector<NewsItem> getTop(int n);
+  explicit WebHandler(std::string key);
+  std::vector<NewsItem> getTop(int n);
 };
 
 #endif //NAIVEBAYESCPP_WEBHANDLER_H

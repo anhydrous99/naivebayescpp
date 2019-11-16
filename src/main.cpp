@@ -8,10 +8,10 @@ using namespace std;
 int main(int argc, char **argv) {
   cxxopts::Options options("naivebayescpp", "A NaiveBayes Classifier");
   options.add_options()
-  ("p,path", "Path to newsgroup dataset", cxxopts::value<string>())
-  ("first_part", "Run part 1 of assignement")
-  ("test_latex", "Print latex when testing")
-  ("h,help", "Displays help");
+      ("p,path", "Path to newsgroup dataset", cxxopts::value<string>())
+      ("first_part", "Run part 1 of assignement")
+      ("test_latex", "Print latex when testing")
+      ("h,help", "Displays help");
   auto arg_results = options.parse(argc, argv);
   if (arg_results.arguments().empty() || arg_results.count("help") != 0) {
     cout << options.help();

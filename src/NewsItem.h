@@ -9,10 +9,10 @@
 #include <map>
 
 struct NewsItem {
-    std::string path;
-    std::string collection;
-    std::map<std::string, unsigned> word_count;
-    std::string contents;
+  std::string path;
+  std::string collection;
+  std::map<std::string, unsigned> word_count;
+  std::string contents;
 };
 
 #endif //NAIVEBAYESCPP_NEWSITEM_H
