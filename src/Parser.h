@@ -5,12 +5,12 @@
 #ifndef NAIVEBAYESCPP_PARSER_H
 #define NAIVEBAYESCPP_PARSER_H
 
-#include "Item.h"
+#include "NewsItem.h"
 #include "WordMatrix.h"
 #include <vector>
 
 class Parser {
-    std::vector<Item> items;
+    std::vector<NewsItem> items;
 public:
     explicit Parser(const std::string &path);
     WordMatrix getMatrix();

@@ -12,7 +12,7 @@ endif ()
 set(JSON_BuildTests OFF CACHE BOOL "Build nlohmann's json tests" FORCE)
 add_subdirectory(extern/eigen-git-mirror)
 add_subdirectory(extern/curl)
-add_subdirectory(extern/tinyxml2)
+add_subdirectory(extern/json)
 add_subdirectory(extern/cxxopts)
 
 add_executable(naivebayescpp
@@ -21,8 +21,8 @@ add_executable(naivebayescpp
         src/Parser.h
         src/WordMatrix.cpp
         src/WordMatrix.h
-        src/Item.h
+        src/NewsItem.h
         src/utils.h
         src/utils.cpp src/WebHandler.cpp src/WebHandler.h)
-target_link_libraries(naivebayescpp stdc++fs eigen libcurl cxxopts tinyxml2)
+target_link_libraries(naivebayescpp stdc++fs eigen libcurl cxxopts nlohmann_json)
 configure_file(${CMAKE_SOURCE_DIR}/stop_words.txt ${CMAKE_BINARY_DIR}/stop_words.txt)

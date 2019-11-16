@@ -2,13 +2,13 @@
 // Created by armando on 11/10/19.
 //
 
-#ifndef NAIVEBAYESCPP_ITEM_H
-#define NAIVEBAYESCPP_ITEM_H
+#ifndef NAIVEBAYESCPP_NEWSITEM_H
+#define NAIVEBAYESCPP_NEWSITEM_H
 
 #include <string>
 #include <map>
 
-struct Item {
+struct NewsItem {
     std::string path;
     std::string collection;
     std::map<std::string, std::string> headers;
@@ -16,4 +16,4 @@ struct Item {
     std::string contents;
 };
 
-#endif //NAIVEBAYESCPP_ITEM_H
+#endif //NAIVEBAYESCPP_NEWSITEM_H

@@ -5,7 +5,7 @@
 #ifndef NAIVEBAYESCPP_WORDMATRIX_H
 #define NAIVEBAYESCPP_WORDMATRIX_H
 
-#include "Item.h"
+#include "NewsItem.h"
 #include <Eigen/Core>
 #include <ostream>
 #include <vector>
@@ -23,7 +23,7 @@ class WordMatrix {
     template <typename T, int N, int M>
     void print_latex(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat);
 public:
-    explicit WordMatrix(const std::vector<Item> &items);
+    explicit WordMatrix(const std::vector<NewsItem> &items);
     WordMatrix(const MatrixXi &word_count, const std::map<std::string, unsigned> &classes,
             const std::map<std::string, unsigned> &words);
     unsigned getTotalWords();
@@ -69,7 +69,7 @@ void WordMatrix::print_matrix(std::ostream &ostr, const Eigen::Matrix<T, N, M> &
 template <typename T, int N, int M>
 void WordMatrix::print_latex(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat) {
   ostr << "\\begin{center}\n\\begin{tabular}{|| c ";
-  for (long i = 0; i < classes.size(); i++)
+  for (unsigned long i = 0; i < classes.size(); i++)
     ostr << "c ";
   ostr << "||}\n\\hline\n";
   ostr << "word";

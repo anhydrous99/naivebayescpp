@@ -54,7 +54,7 @@ Parser::Parser(const string &path) {
     while (it != fs::recursive_directory_iterator{}) {
         fs::path tmp = (*it++).path();
         if (fs::exists(tmp) && !fs::is_directory(tmp)) {
-            Item itm;
+            NewsItem itm;
             // Read file to string
             string txt = read_file(tmp);
             itm.path = tmp.string();
@@ -125,7 +125,7 @@ void Parser::prune_per_class(unsigned long max_per_classes) {
     shuffle(indices.begin(), indices.end(), gen);
 
     map<string, unsigned long> item_count;
-    vector<Item> new_items;
+    vector<NewsItem> new_items;
     for (const auto& itm : items) {
         auto itr = item_count.find(itm.collection);
         if (itr != item_count.end()) {
