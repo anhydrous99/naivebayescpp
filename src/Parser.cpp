@@ -60,17 +60,6 @@ Parser::Parser(const string &path) {
             itm.path = tmp.string();
             itm.contents = txt;
 
-            // Parse header
-            istringstream stream(txt);
-            while (getline(stream, line)) {
-                if (line.empty())
-                    break;
-                int colon_index = line.find(':');
-                string name = line.substr(0, colon_index);
-                string contents = line.substr(colon_index + 1);
-                itm.headers[name] = contents;
-            }
-
             // Get classification
             itm.collection = tmp.parent_path().filename().string();
 
