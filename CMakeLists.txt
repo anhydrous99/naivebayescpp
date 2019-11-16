@@ -23,6 +23,6 @@ add_executable(naivebayescpp
         src/WordMatrix.h
         src/Item.h
         src/utils.h
-        src/utils.cpp)
+        src/utils.cpp src/WebHandler.cpp src/WebHandler.h)
 target_link_libraries(naivebayescpp stdc++fs eigen libcurl nlohmann_json cxxopts)
 configure_file(${CMAKE_SOURCE_DIR}/stop_words.txt ${CMAKE_BINARY_DIR}/stop_words.txt)

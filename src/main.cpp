@@ -8,7 +8,7 @@ using namespace std;
 int main(int argc, char **argv) {
   cxxopts::Options options("naivebayescpp", "A NaiveBayes Classifier");
   options.add_options()
-  ("p,path", "Path to newsgroup dataset")
+  ("p,path", "Path to newsgroup dataset", cxxopts::value<string>())
   ("t,test", "Run newgroup tests")
   ("test_latex", "Print latex when testing")
   ("h,help", "Displays help");
@@ -25,5 +25,7 @@ int main(int argc, char **argv) {
   if (arg_results.count("test") != 0) {
     test(newgroup_path, (arg_results.count("test_latex") != 0));
   }
+
+
   return EXIT_SUCCESS;
 }
