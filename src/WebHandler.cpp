@@ -96,8 +96,10 @@ std::vector<NewsItem> WebHandler::getTop(int n) {
     for (const auto &element :  arr) {
       NewsItem itm;
       itm.collection = "unknown";
-      itm.path = "web";
+      itm.path = element["url"].get<string>();
       itm.contents = element["content"].get<string>();
+      itm.contents += " " + element["description"].get<string>();
+      itm.contents += " " + element["title"].get<string>();
 
       // Count words
       auto regit = sregex_iterator(itm.contents.begin(), itm.contents.end(), expr);
