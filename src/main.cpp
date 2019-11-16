@@ -9,7 +9,7 @@ int main(int argc, char **argv) {
   cxxopts::Options options("naivebayescpp", "A NaiveBayes Classifier");
   options.add_options()
   ("p,path", "Path to newsgroup dataset", cxxopts::value<string>())
-  ("t,test", "Run newgroup tests")
+  ("first_part", "Run part 1 of assignement")
   ("test_latex", "Print latex when testing")
   ("h,help", "Displays help");
   auto arg_results = options.parse(argc, argv);
@@ -23,9 +23,8 @@ int main(int argc, char **argv) {
   }
   string newgroup_path = arg_results["path"].as<string>();
   if (arg_results.count("test") != 0) {
-    test(newgroup_path, (arg_results.count("test_latex") != 0));
+    part1(newgroup_path, (arg_results.count("test_latex") != 0));
   }
-
 
   return EXIT_SUCCESS;
 }

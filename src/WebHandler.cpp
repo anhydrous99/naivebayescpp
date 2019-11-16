@@ -51,4 +51,3 @@ string WebHandler::Call(const std::map<std::string, std::string> &args) {
 }
 
 WebHandler::WebHandler(std::string key) : apikey(std::move(key)) {}
-

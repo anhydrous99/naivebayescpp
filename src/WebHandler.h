@@ -18,5 +18,4 @@ public:
     explicit WebHandler(std::string key);
 };
 
-
 #endif //NAIVEBAYESCPP_WEBHANDLER_H

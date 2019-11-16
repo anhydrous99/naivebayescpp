@@ -8,7 +8,7 @@
 #include <string>
 
 void print_to_file(const std::string &to_print, const std::string &path);
-void test(const std::string& newsgroup_path, bool print_latex);
+void part1(const std::string& newsgroup_path, bool print_latex);
 
 
 #endif //NAIVEBAYESCPP_UTILS_H
