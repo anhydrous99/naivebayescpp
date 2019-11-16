@@ -10,6 +10,7 @@
 #include <vector>
 #include <map>
 
+//! Uses the libcurl library to interface with newsapi.org to obtain the leading news
 class WebHandler {
   std::string url = "https://newsapi.org/v2/top-headlines?";
   std::string apikey;
@@ -18,7 +19,17 @@ class WebHandler {
   std::string Call(const std::map<std::string, std::string> &args);
 
 public:
+  /*!
+   * Constructs the WebHandler class
+   * @param key The api key for the newsapi.org site
+   */
   explicit WebHandler(std::string key);
+
+  /*!
+   * Calls the newsapi and obtains the top n news articles
+   * @param n The number of articles to get
+   * @return A vector of n NewsItem objects
+   */
   std::vector<NewsItem> getTop(int n);
 };
 
