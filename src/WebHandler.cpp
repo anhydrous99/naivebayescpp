@@ -3,11 +3,14 @@
 //
 
 #include <iostream>
+#include <stdexcept>
 #include <curl/curl.h>
+#include <nlohmann/json.hpp>
 
 #include "WebHandler.h"
 
 using namespace std;
+using json = nlohmann::json;
 
 static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp) {
     ((string*)userp)->append((char*)contents, size * nmemb);
@@ -51,3 +54,24 @@ string WebHandler::Call(const std::map<std::string, std::string> &args) {
 }
 
 WebHandler::WebHandler(std::string key) : apikey(std::move(key)) {}
+
+std::vector<NewsItem> WebHandler::getTop(int n) {
+    vector<NewsItem> items(n);
+    const int max_per_call = 100;
+    for (int i = 0, j = 0; i < n; i+=max_per_call, j++) {
+        string contents;
+        int rm = n - (i * max_per_call);
+        map<string, string> args;
+        args["country"] = "us";
+        args["pageSize"] = to_string(min(rm, max_per_call));
+        args["page"] = to_string(j);
+        contents = Call(args);
+        auto json_parse = json::parse(contents);
+        if (!json_parse.contains("status")) {
+            throw runtime_error("Error: could parser json or could access internet");
+        }
+        if (json_parse["status"].get<string>() == "error") {
+            throw runtime_error(json_parse["code"].get<string>() + json_parse["message"].get<string>());
+        }
+    }
+}
