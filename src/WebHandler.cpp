@@ -15,9 +15,7 @@
 namespace fs = std::filesystem;
 #else
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
-
 #include <experimental/filesystem>
-
 namespace fs = std::experimental::filesystem;
 #endif
 
