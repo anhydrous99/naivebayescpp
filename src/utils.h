@@ -22,7 +22,7 @@ void print_to_file(const std::string &to_print, const std::string &path);
  * @param newsgroup_path The path to the news group dataset
  * @param print_latex Whether to print in latex syntax
  */
-void part1(const std::string &newsgroup_path, bool print_latex);
+void part1(const std::string &newsgroup_path, bool print_latex, bool save_csv);
 
 
 #endif //NAIVEBAYESCPP_UTILS_H

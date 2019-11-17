@@ -16,7 +16,7 @@ void print_to_file(const string &to_print, const string &path) {
   ostrm << to_print;
 }
 
-void part1(const string &newgroup_path, bool print_latex) {
+void part1(const string &newgroup_path, bool print_latex, bool save_csv) {
   // Parse files
   cout << "Parsing text files!\n";
 
@@ -108,10 +108,8 @@ void part1(const string &newgroup_path, bool print_latex) {
   string test2_str = test2_oss.str();
   string test3_str = test3_oss.str();
 
-  if (!print_latex) {
-    print_to_file(test1_str, "test1.csv");
-    print_to_file(test2_str, "test2.csv");
-    print_to_file(test3_str, "test3.csv");
+  if (!print_latex && save_csv) {
+    print_to_file(test1_str + "\n" + test2_str + "\n" + test3_str, "AssignmentPart1.csv");
   }
 
   cout << test1_str << endl << test2_str << endl << test3_str;
