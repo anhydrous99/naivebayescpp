@@ -3,21 +3,13 @@
 //
 
 #include "WebHandler.h"
+#include "filesystem.h"
 #include <regex>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
-
-#if __cplusplus > 201402L
-#include <filesystem>
-namespace fs = std::filesystem;
-#else
-#define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-#endif
 
 using namespace std;
 using json = nlohmann::json;
