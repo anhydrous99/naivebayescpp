@@ -9,6 +9,7 @@ if (APPLE)
     set(OPENSSL_ROOT_DIR /usr/local/opt/openssl)
 endif ()
 
+set(HTTP_ONLY ON CACHE BOOL "disables all protocols except HTTP (This overrides all CURL_DISABLE_* options)" FORCE)
 set(JSON_BuildTests OFF CACHE BOOL "Build nlohmann's json tests" FORCE)
 add_subdirectory(extern/eigen-git-mirror)
 add_subdirectory(extern/curl)
