@@ -12,17 +12,23 @@
 #include <map>
 
 typedef Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic> MatrixXi;
+typedef Eigen::MatrixXd MatrixXd;
+typedef Eigen::VectorXd VectorXd;
 
 //! Uses an Eigen matrix to store a words count per class and do arithmetic with
 class WordMatrix {
-  MatrixXi word_count;
-  std::map<std::string, unsigned> classes;
-  std::map<std::string, unsigned> words;
+  MatrixXi _word_count;
+  MatrixXd _word_probability;
+  std::map<std::string, unsigned> _classes;
+  std::map<std::string, unsigned> _words;
+  bool probability_calculated = false;
 
   template<typename T, int N, int M>
   void print_matrix(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat);
   template<typename T, int N, int M>
   void print_latex(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat);
+
+  void calculate_probability();
 public:
   /*!
    * Constructs the word matrix from a vector of NewsItem objects
@@ -78,7 +84,7 @@ public:
    * @param word The word
    * @return The count
    */
-  unsigned getCount(const std::string &clss, const std::string &word);
+  unsigned &getCount(const std::string &clss, const std::string &word);
 
   /*!
    * Gets the number of occurences of a word in a set of classes
@@ -169,6 +175,8 @@ public:
    * @return A sub-matrix with only the n most frequent words as described above
    */
   WordMatrix getMostFrequent(unsigned long n);
+
+  std::string predict(const NewsItem &itm);
 };
 
 // ---- Template Function Implementations ----
@@ -176,13 +184,13 @@ public:
 template<typename T, int N, int M>
 void WordMatrix::print_matrix(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat) {
   ostr << "word,";
-  for (const auto &cls_pair : classes) {
+  for (const auto &cls_pair : _classes) {
     ostr << cls_pair.first << ',';
   }
   ostr << '\n';
-  for (const auto &word_pair : words) {
+  for (const auto &word_pair : _words) {
     ostr << word_pair.first << ',';
-    for (const auto &cls_pair : classes) {
+    for (const auto &cls_pair : _classes) {
       ostr << mat(cls_pair.second, word_pair.second) << ',';
     }
     ostr << '\n';
@@ -192,16 +200,16 @@ void WordMatrix::print_matrix(std::ostream &ostr, const Eigen::Matrix<T, N, M> &
 template<typename T, int N, int M>
 void WordMatrix::print_latex(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat) {
   ostr << "\\begin{center}\n\\begin{tabular}{|| c ";
-  for (unsigned long i = 0; i < classes.size(); i++)
+  for (unsigned long i = 0; i < _classes.size(); i++)
     ostr << "c ";
   ostr << "||}\n\\hline\n";
   ostr << "word";
-  for (const auto &cls_pair : classes)
+  for (const auto &cls_pair : _classes)
     ostr << " & " << cls_pair.first;
   ostr << " \\\\ \n\\hline\\hline\n";
-  for (const auto &word_pair : words) {
+  for (const auto &word_pair : _words) {
     ostr << word_pair.first;
-    for (const auto &cls_pair : classes) {
+    for (const auto &cls_pair : _classes) {
       ostr << " & " << mat(cls_pair.second, word_pair.second);
     }
     ostr << " \\\\ \\hline \n";

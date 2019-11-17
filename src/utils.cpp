@@ -32,7 +32,7 @@ void part1(const string &newgroup_path, bool print_latex, bool save_csv) {
   random_device rd;
   mt19937 g(rd());
 
-  // Randomly choose classes/categories
+  // Randomly choose _classes/categories
   vector<string> classes(p.get_classes());
   auto itr_begin = classes.begin();
   auto itr_end = classes.end();
@@ -57,7 +57,7 @@ void part1(const string &newgroup_path, bool print_latex, bool save_csv) {
   WordMatrix mat_test2 = parsed_test2.getMatrix();
   WordMatrix mat_test3 = parsed_test3.getMatrix();
 
-  // Create sub-word matrices of classes
+  // Create sub-word matrices of _classes
   WordMatrix submat_test1 = mat_test1.block(test1_classes);
   WordMatrix submat_test2 = mat_test2.block(test2_classes);
   WordMatrix submat_test3 = mat_test3.block(test3_classes);
