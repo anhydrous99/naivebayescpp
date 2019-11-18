@@ -30,6 +30,16 @@ int main(int argc, char **argv) {
   if (arg_results.count("run_first_part") != 0) {
     part1(newgroup_path, (arg_results.count("test_latex") != 0),
           (arg_results.count("save_csv") != 0));
+  } else if (arg_results.count("run_second_part") != 0) {
+    if (arg_results.count("full_path") == 1) {
+      // TODO: run offline benchmarks
+      // 1. The classifier is trained on the mini group benchmarked against the full group
+    } else {
+      // TODO: run online benchmarks
+      // 1. Create re-classifier to reclassify according to online classifications
+      // 2. Train on re-classified mini-newsgroup data and inference online data
+      // 3. Train on online data and benchmark the mini and full newsgroup items
+    }
   }
 
   return EXIT_SUCCESS;
