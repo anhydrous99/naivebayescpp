@@ -39,21 +39,22 @@ void part1(const std::string &newsgroup_path, bool print_latex, bool save_csv);
  * @return A container of length k type Container that was randomly sampled
  */
 template<typename Itr, typename URNG>
-std::vector<typename std::iterator_traits<Itr>::value_type> sample(Itr first, Itr last, typename std::iterator_traits<Itr>::difference_type k, URNG&& g) {
-  typedef typename std::iterator_traits<Itr>::difference_type diff_type;
-  typedef typename std::iterator_traits<Itr>::value_type val_type;
-  diff_type i = 0;
-  diff_type n = last - first;
-  std::vector<val_type> reservoir(k);
-  for (; i < k; i++)
-    reservoir[i] = first[i];
-  for (; i < n; i++) {
-    std::uniform_int_distribution<diff_type> d(0, i);
-    diff_type j = d(g);
-    if (j < k)
-      reservoir[j] = first[i];
-  }
-  return reservoir;
+std::vector<typename std::iterator_traits<Itr>::value_type>
+sample(Itr first, Itr last, typename std::iterator_traits<Itr>::difference_type k, URNG &&g) {
+    typedef typename std::iterator_traits<Itr>::difference_type diff_type;
+    typedef typename std::iterator_traits<Itr>::value_type val_type;
+    diff_type i = 0;
+    diff_type n = last - first;
+    std::vector<val_type> reservoir(k);
+    for (; i < k; i++)
+        reservoir[i] = first[i];
+    for (; i < n; i++) {
+        std::uniform_int_distribution<diff_type> d(0, i);
+        diff_type j = d(g);
+        if (j < k)
+            reservoir[j] = first[i];
+    }
+    return reservoir;
 }
 
 #endif //NAIVEBAYESCPP_UTILS_H

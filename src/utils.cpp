@@ -37,7 +37,7 @@ void part1(const string &newgroup_path, bool print_latex, bool save_csv) {
   auto eitr = classes.end();
   vector<string> test1_classes = sample(bitr, eitr, 5, g);
   vector<string> test2_classes = sample(bitr, eitr, 5, g);
-  vector<string> test3_classes = sample(bitr, eitr, 5, g);
+  vector<string> test3_classes = sample(bitr, eitr, 10, g);
 
   cout << "Prunning number of text files per class!\n";
 

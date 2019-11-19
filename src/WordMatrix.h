@@ -25,10 +25,12 @@ class WordMatrix {
 
   template<typename T, int N, int M>
   void print_matrix(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat);
+
   template<typename T, int N, int M>
   void print_latex(std::ostream &ostr, const Eigen::Matrix<T, N, M> &mat);
 
   void calculate_probability();
+
 public:
   /*!
    * Constructs the word matrix from a vector of NewsItem objects
@@ -44,6 +46,7 @@ public:
    */
   WordMatrix(const MatrixXi &word_count, const std::map<std::string, unsigned> &classes,
              const std::map<std::string, unsigned> &words);
+
   /*!
    * Gets the total words in the data
    * @return The total words
@@ -124,6 +127,13 @@ public:
    * @return A sub-WordMatrix
    */
   WordMatrix block(const std::vector<std::string> &clss);
+
+  /*!
+   * Prunes the number of classes randomly to n
+   * @param n The number of classes in the resulting WordMatrix
+   * @return A WordMatrix with n classes
+   */
+  WordMatrix prune_classes(unsigned long n);
 
   /*!
    * Prints the probabilities of the words in an output stream

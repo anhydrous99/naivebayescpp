@@ -3,6 +3,7 @@
 //
 
 #include "WordMatrix.h"
+#include "utils.h"
 #include <queue>
 #include <iostream>
 #include <set>
@@ -151,6 +152,15 @@ WordMatrix WordMatrix::block(const std::vector<std::string> &clss) {
   return WordMatrix(new_mat, new_class_map, new_word_map);
 }
 
+WordMatrix WordMatrix::prune_classes(unsigned long n) {
+  random_device rd;
+  mt19937 g(rd());
+  vector<string> clss;
+  for (const auto& cls_pair : _classes)
+    clss.push_back(cls_pair.first);
+  return block(sample(clss.begin(), clss.end(), n, g));
+}
+
 void WordMatrix::printFrequency(std::ostream &ostr) {
   print_matrix(ostr, _word_count);
 }
@@ -233,18 +243,18 @@ std::string WordMatrix::predict(const NewsItem &itm) {
   map<string, unsigned> wc = itm.word_count;
   // Remove words we are not considering
   vector<string> to_delete;
-  for (const auto& wc_pair : wc) {
+  for (const auto &wc_pair : wc) {
     if (_words.find(wc_pair.first) == _words.end())
       to_delete.push_back(wc_pair.first); // Deleting here might cause a miss-aligned iterator
   }
-  for (const string& st : to_delete)
+  for (const string &st : to_delete)
     wc.erase(st);
 
 
   // Start Calculating probabilities
   unsigned long n_classes = _classes.size();
   VectorXd word_prob = VectorXd::Zero(_words.size());
-  for (const auto& wc_pair : wc) {
+  for (const auto &wc_pair : wc) {
     unsigned index = _words[wc_pair.first];
     double &current = word_prob(index);
     for (unsigned long i = 0; i < n_classes; i++) {
@@ -255,7 +265,7 @@ std::string WordMatrix::predict(const NewsItem &itm) {
 
   // Get argmax's class
   int argmax = word_prob.maxCoeff();
-  for (const auto& cls_pair : _classes)
+  for (const auto &cls_pair : _classes)
     if (cls_pair.second == argmax)
       return cls_pair.first;
   return "";
