@@ -1,25 +1,71 @@
 @echo off
-setlocal enabledelayedexpansion
+
+IF "%~1"=="clean" (
+	PUSHD
+	RMDIR /S build
+	CD extern\curl
+	RMDIR /S builds
+	CALL buildconf.bat -clean
+	CD ..\zlib
+	RMDIR /S include
+	RMDIR /S lib
+	nmake -f win32/Makefile.msc
+	POPD
+	EXIT /B
+)
+IF "%~1"=="getdeps" (
+	MKDIR extern
+	PUSHD extern
+	ECHO GETTING CURL
+	powershell -Command "Invoke-WebRequest https://github.com/curl/curl/releases/download/curl-7_67_0/curl-7.67.0.zip -OutFile curl.zip"
+	ECHO GETTING CXXOPTS
+	powershell -Command "Invoke-WebRequest https://github.com/jarro2783/cxxopts/archive/v2.2.0.zip -OutFile cxxopt.zip"
+	ECHO GETTING EIGEN
+	powershell -Command "Invoke-WebRequest https://github.com/eigenteam/eigen-git-mirror/archive/3.3.7.zip -OutFile eigen.zip"
+	ECHO GETTING JSON
+	powershell -Command "Invoke-WebRequest https://github.com/nlohmann/json/archive/v3.7.3.zip -OutFile json.zip"
+	ECHO GETTING ZLIB
+	powershell -Command "Invoke-WebRequest https://github.com/madler/zlib/archive/cacf7f1d4e3d44d871b605da3b647f07d718623f.zip -OutFile zlib.zip"
+	unzip curl.zip
+	unzip cxxopt.zip
+	unzip eigen.zip
+	unzip json.zip
+	unzip zlib.zip
+	DEL curl.zip
+	DEL cxxopt.zip
+	DEL eigen.zip
+	DEL json.zip
+	DEL zlib.zip
+	MOVE curl-7.67.0 curl
+	MOVE cxxopts-2.2.0 cxxopts
+	MOVE eigen-git-mirror-3.3.7 eigen-git-mirror
+	MOVE json-3.7.3 json
+	MOVE zlib-cacf7f1d4e3d44d871b605da3b647f07d718623f zlib
+	POPD
+	EXIT /B
+)
+
+SETLOCAL enabledelayedexpansion
 REM BUILD ZLIB
-pushd extern\zlib
+PUSHD extern\zlib
 nmake -f win32/Makefile.msc
 
 REM CREATE ZLIB INCLUDE
-mkdir include
-xcopy *.h include
-mkdir lib
-xcopy *.lib lib
+MKDIR include
+XCOPY *.h include
+MKDIR lib
+XCOPY *.lib lib
 
 REM BUILD CURL
-cd ..\curl
+CD ..\curl
 CALL buildconf.bat
-cd winbuild
+CD winbuild
 nmake -f Makefile.vc mode=static WITH_ZLIB=static ZLIB_PATH=..\..\zlib
 
-cd ..\..\..\
-mkdir build
-cd build
-mkdir objs
+CD ..\..\..\
+MKDIR build
+CD build
+MKDIR objs
 
 SET SOURCE_DIR=..\src
 SET INCLUDE_DIR=/I..\src
@@ -30,20 +76,19 @@ SET INCLUDE_DIR=%INCLUDE_DIR% /I..\extern\curl\include
 SET INCLUDE_DIR=%INCLUDE_DIR% /I..\extern\zlib\include
 
 SET LIBPATHS=/LIBPATH:"..\extern\zlib\lib"
-SET LIBPATHS=%LIBPATHS% /LIBPATH:"..\extern\curl\builds\libcurl-vc-x64-release-static-zlib-static-ipv6-sspi-winssl\lib"
+SET LIBPATHS=%LIBPATHS% /LIBPATH:"..\extern\curl\builds\libcurl-vc-x64-release-static-zlib-static-ipv6-sspi-winssl-obj-lib"
 
-SET LINK_OBJECTS=zlib.lib libcurl_a.lib ws2_32.lib wldap32.lib MSVCRT.lib
-SET LINK_OBJECTS=%LINK_OBJECTS% advapi32.lib crypt32.lib Normaliz.lib
+SET LINK_OBJECTS=ws2_32.lib wldap32.lib MSVCRT.lib advapi32.lib crypt32.lib Normaliz.lib zlib.lib libcurl_a.lib
 
 for %%I in (%SOURCE_DIR%\*.cpp) do (
-	cl %INCLUDE_DIR% /O2 /DNDEBUG /MD /std:c++14 /W4 /wd4267 /nologo /EHsc /DWIN32 /FD /c /Foobjs\%%~nI.obj %%I
+	cl %INCLUDE_DIR% /O2 /DNDEBUG /MD /DCURL_STATICLIB /std:c++14 /W4 /wd4267 /nologo /EHsc /DWIN32 /FD /c /Foobjs\%%~nI.obj %%I
 )
 
 for %%I in (objs\*.obj) do (
 	SET LINK_OBJECTS=!LINK_OBJECTS! %%I
 )
-echo %LIBPATHS%
-echo %LINK_OBJECTS%
-link /incremental:no /out:naivebayescpp.exe /subsystem:console /nologo /machine:x64 %LIBPATHS% %LINK_OBJECTS%
+ECHO %LIBPATHS%
+ECHO %LINK_OBJECTS%
+link /out:naivebayescpp.exe /subsystem:console /nologo /machine:x64 %LIBPATHS% %LINK_OBJECTS%
 
-popd
+POPD
