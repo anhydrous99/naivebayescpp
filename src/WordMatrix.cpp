@@ -7,6 +7,7 @@
 #include <queue>
 #include <iostream>
 #include <set>
+#include <cmath>
 
 using namespace std;
 
@@ -256,7 +257,7 @@ std::string WordMatrix::predict(const NewsItem &itm) {
   for (const auto &wc_pair : wc) {
     unsigned index = _words[wc_pair.first];
     for (unsigned long i = 0; i < n_classes; i++) {
-      double current_wp = _word_probability(i, index);
+      double current_wp = pow(_word_probability(i, index), wc_pair.second);
       double& clsp = class_prob(i);
       clsp = (clsp == 0) ? current_wp : clsp * current_wp;
     }
