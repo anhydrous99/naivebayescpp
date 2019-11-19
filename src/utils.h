@@ -29,14 +29,13 @@ void part1(const std::string &newsgroup_path, bool print_latex, bool save_csv);
 
 /*!
  * Implements the Reservoir Random Sampling Algorithm
- * @tparam Container The container type, must have random access
  * @tparam Itr A container's iterator
  * @tparam URNG A random number generator type
  * @param first The start of the container we are sampling from
  * @param last The end of the container we are sampling from
  * @param k The number of elements to sample
  * @param g The random number generator
- * @return A container of length k type Container that was randomly sampled
+ * @return A vector of length k that was randomly sampled
  */
 template<typename Itr, typename URNG>
 std::vector<typename std::iterator_traits<Itr>::value_type>
