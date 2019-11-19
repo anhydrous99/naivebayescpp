@@ -250,21 +250,27 @@ std::string WordMatrix::predict(const NewsItem &itm) {
   for (const string &st : to_delete)
     wc.erase(st);
 
-
   // Start Calculating probabilities
   unsigned long n_classes = _classes.size();
-  VectorXd word_prob = VectorXd::Zero(_words.size());
+  VectorXd class_prob = VectorXd::Zero(n_classes);
   for (const auto &wc_pair : wc) {
     unsigned index = _words[wc_pair.first];
-    double &current = word_prob(index);
     for (unsigned long i = 0; i < n_classes; i++) {
-      double &current_wp = _word_probability(i, index);
-      current = (current == 0) ? current_wp : current * current_wp;
+      double current_wp = _word_probability(i, index);
+      double& clsp = class_prob(i);
+      clsp = (clsp == 0) ? current_wp : clsp * current_wp;
     }
   }
-
-  // Get argmax's class
-  auto argmax = static_cast<unsigned>(word_prob.maxCoeff());
+  // Get argmax
+  unsigned long argmax = 0;
+  double mx = 0;
+  for (int i = 0; i < n_classes; i++) {
+    if (mx < class_prob(i)) {
+      mx = class_prob(i);
+      argmax = i;
+    }
+  }
+  // Get argmax's class string
   for (const auto &cls_pair : _classes)
     if (cls_pair.second == argmax)
       return cls_pair.first;
