@@ -25,7 +25,7 @@ IF "%~1"=="getdeps" (
 	ECHO GETTING JSON
 	powershell -Command "Invoke-WebRequest https://github.com/nlohmann/json/archive/v3.7.3.zip -OutFile json.zip"
 	ECHO GETTING ZLIB
-	powershell -Command "Invoke-WebRequest https://github.com/madler/zlib/archive/cacf7f1d4e3d44d871b605da3b647f07d718623f.zip -OutFile zlib.zip"
+	powershell -Command "Invoke-WebRequest https://www.zlib.net/zlib1211.zip -OutFile zlib.zip"
 	unzip curl.zip
 	unzip cxxopt.zip
 	unzip eigen.zip
@@ -40,7 +40,7 @@ IF "%~1"=="getdeps" (
 	MOVE cxxopts-2.2.0 cxxopts
 	MOVE eigen-git-mirror-3.3.7 eigen-git-mirror
 	MOVE json-3.7.3 json
-	MOVE zlib-cacf7f1d4e3d44d871b605da3b647f07d718623f zlib
+	MOVE zlib-1.2.11 zlib
 	POPD
 	EXIT /B
 )

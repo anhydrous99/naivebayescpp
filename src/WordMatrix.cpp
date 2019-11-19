@@ -264,7 +264,7 @@ std::string WordMatrix::predict(const NewsItem &itm) {
   }
 
   // Get argmax's class
-  int argmax = word_prob.maxCoeff();
+  auto argmax = static_cast<unsigned>(word_prob.maxCoeff());
   for (const auto &cls_pair : _classes)
     if (cls_pair.second == argmax)
       return cls_pair.first;
