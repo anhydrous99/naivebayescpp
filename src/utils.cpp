@@ -3,7 +3,6 @@
 //
 
 #include "utils.h"
-#include <random>
 #include <iostream>
 #include <fstream>
 #include "Parser.h"
@@ -34,14 +33,11 @@ void part1(const string &newgroup_path, bool print_latex, bool save_csv) {
 
   // Randomly choose _classes/categories
   vector<string> classes(p.get_classes());
-  auto itr_begin = classes.begin();
-  auto itr_end = classes.end();
-  shuffle(itr_begin, itr_end, g);
-  vector<string> test1_classes(itr_begin, (itr_begin + 5));
-  shuffle(itr_begin, itr_end, g);
-  vector<string> test2_classes(itr_begin, (itr_begin + 5));
-  shuffle(itr_begin, itr_end, g);
-  vector<string> test3_classes(itr_begin, (itr_begin + 10));
+  auto bitr = classes.begin();
+  auto eitr = classes.end();
+  vector<string> test1_classes = sample(bitr, eitr, 5, g);
+  vector<string> test2_classes = sample(bitr, eitr, 5, g);
+  vector<string> test3_classes = sample(bitr, eitr, 5, g);
 
   cout << "Prunning number of text files per class!\n";
 
