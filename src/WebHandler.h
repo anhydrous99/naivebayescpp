@@ -30,7 +30,7 @@ public:
    * @param n The number of articles to get
    * @return A vector of n NewsItem objects
    */
-  std::vector<NewsItem> getTop(int n);
+  std::vector<NewsItem> getTop(size_t n);
 };
 
 #endif //NAIVEBAYESCPP_WEBHANDLER_H

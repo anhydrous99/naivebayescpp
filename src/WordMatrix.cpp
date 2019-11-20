@@ -11,11 +11,11 @@
 
 using namespace std;
 
-WordMatrix::WordMatrix(const MatrixXi &wc, const std::map<std::string, unsigned> &clss,
-                       const std::map<std::string, unsigned> &wrds) {
-  _word_count = wc;
-  _classes = clss;
-  _words = wrds;
+WordMatrix::WordMatrix(MatrixXi wc, std::map<std::string, size_t> clss,
+                       std::map<std::string, size_t> wrds) :
+                       _word_count(move(wc)),
+                       _classes(move(clss)),
+                       _words(move(wrds)) {
 }
 
 WordMatrix::WordMatrix(const std::vector<NewsItem> &items) {
@@ -30,7 +30,7 @@ WordMatrix::WordMatrix(const std::vector<NewsItem> &items) {
   }
 
   // Create index maps, maps strings to the matrix's indexes
-  int i = 0;
+  size_t i = 0;
   for (const string &cls : class_list) {
     _classes[cls] = i;
     i++;
@@ -50,75 +50,69 @@ WordMatrix::WordMatrix(const std::vector<NewsItem> &items) {
   }
 }
 
-unsigned WordMatrix::getTotalWords() {
+size_t WordMatrix::getTotalWords() {
   return _word_count.sum();
 }
 
-unsigned WordMatrix::getClassTotal(const std::string &cls) {
+size_t WordMatrix::getClassTotal(const std::string &cls) {
   unsigned index = _classes[cls];
   return _word_count.row(index).sum();
 }
 
-unsigned WordMatrix::getWordTotal(const std::string &word) {
+size_t WordMatrix::getWordTotal(const std::string &word) {
   unsigned index = _words[word];
   return _word_count.col(index).sum();
 }
 
-unsigned WordMatrix::getClassTotal(const std::vector<std::string> &clss) {
+size_t WordMatrix::getClassTotal(const std::vector<std::string> &clss) {
   Eigen::Matrix<unsigned, Eigen::Dynamic, 1> count(clss.size());
-  for (unsigned long i = 0; i < clss.size(); i++) {
+  for (size_t i = 0; i < clss.size(); i++) {
     count[i] = getClassTotal(clss[i]);
   }
   return count.sum();
 }
 
-unsigned WordMatrix::getWordTotal(const std::vector<std::string> &wrds) {
-  Eigen::Matrix<unsigned, Eigen::Dynamic, 1> count(wrds.size());
-  for (unsigned long i = 0; i < wrds.size(); i++) {
+size_t WordMatrix::getWordTotal(const std::vector<std::string> &wrds) {
+  Eigen::Matrix<size_t, Eigen::Dynamic, 1> count(wrds.size());
+  for (size_t i = 0; i < wrds.size(); i++) {
     count[i] = getWordTotal(wrds[i]);
   }
   return count.sum();
 }
 
-unsigned &WordMatrix::getCount(const std::string &cls, const std::string &word) {
+size_t &WordMatrix::getCount(const std::string &cls, const std::string &word) {
   unsigned i = _classes[cls];
   unsigned j = _words[word];
   return _word_count(i, j);
 }
 
-unsigned WordMatrix::getCount(const std::vector<std::string> &clss, const std::string &word) {
-  unsigned count = 0;
-  for (const string &cls : clss) {
-    count += getCount(cls, word);
-  }
-  return count;
+size_t WordMatrix::getCount(const std::vector<std::string> &clss, const std::string &word) {
+  return accumulate(clss.begin(), clss.end(), 0, [&] (size_t a, const string &b) -> size_t {
+    return a + getCount(b, word);
+  });
 }
 
-unsigned WordMatrix::getCount(const std::string &cls, const std::vector<std::string> &wrds) {
-  unsigned count = 0;
-  for (const string &word : wrds) {
-    count += getCount(cls, word);
-  }
-  return count;
+size_t WordMatrix::getCount(const std::string &cls, const std::vector<std::string> &wrds) {
+  return accumulate(wrds.begin(), wrds.end(), 0, [&] (size_t a, const string &b) -> size_t {
+    return a + getCount(cls, b);
+  });
 }
 
-unsigned WordMatrix::getCount(const std::vector<std::string> &clss, std::vector<std::string> &wrds) {
-  unsigned count = 0;
-  for (const string &cls : clss) {
-    count += getCount(cls, wrds);
-  }
-  return count;
+size_t WordMatrix::getCount(const std::vector<std::string> &clss, const std::vector<std::string> &wrds) {
+  return accumulate(clss.begin(), clss.end(), 0, [&] (size_t a, const string &b) -> size_t {
+    return a + getCount(b, wrds);
+  });
 }
 
 WordMatrix WordMatrix::block(const std::vector<std::string> &clss, const std::vector<std::string> &wrds) {
-  unsigned long n = clss.size(), m = wrds.size();
+  size_t n = clss.size(), m = wrds.size();
   MatrixXi new_mat(n, m);
-  map<string, unsigned> new_class_map;
-  map<string, unsigned> new_word_map;
+  map<string, size_t> new_class_map;
+  map<string, size_t> new_word_map;
 
-  for (unsigned long i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; i++) {
     new_class_map[clss[i]] = i;
-    for (unsigned long j = 0; j < m; j++) {
+    for (size_t j = 0; j < m; j++) {
       if (i == 0)
         new_word_map[wrds[j]] = j;
 
@@ -130,10 +124,10 @@ WordMatrix WordMatrix::block(const std::vector<std::string> &clss, const std::ve
 }
 
 WordMatrix WordMatrix::block(const std::vector<std::string> &clss) {
-  map<string, unsigned> new_class_map;
-  map<string, unsigned> new_word_map;
+  map<string, size_t> new_class_map;
+  map<string, size_t> new_word_map;
 
-  for (unsigned long i = 0; i < clss.size(); i++)
+  for (size_t i = 0; i < clss.size(); i++)
     new_class_map[clss[i]] = i;
 
   int i = 0;
@@ -153,12 +147,13 @@ WordMatrix WordMatrix::block(const std::vector<std::string> &clss) {
   return WordMatrix(new_mat, new_class_map, new_word_map);
 }
 
-WordMatrix WordMatrix::prune_classes(unsigned long n) {
+WordMatrix WordMatrix::prune_classes(size_t n) {
   random_device rd;
   mt19937 g(rd());
   vector<string> clss;
-  for (const auto& cls_pair : _classes)
-    clss.push_back(cls_pair.first);
+  transform(_classes.begin(), _classes.end(), back_inserter(clss), [](const auto& cls_pair) {
+    return cls_pair.first;
+  });
   return block(sample(clss.begin(), clss.end(), n, g));
 }
 
@@ -179,8 +174,8 @@ void WordMatrix::printFrequency() {
   printFrequency(cout);
 }
 
-WordMatrix WordMatrix::getMostFrequent(unsigned long n) {
-  unsigned long new_n = n / _classes.size();
+WordMatrix WordMatrix::getMostFrequent(size_t n) {
+  size_t new_n = n / _classes.size();
   vector<string> used;
   for (const auto &class_pair : _classes) {
     auto cmp = [&](const string &word1, const string &word2) {
@@ -194,16 +189,16 @@ WordMatrix WordMatrix::getMostFrequent(unsigned long n) {
       }
     }
 
-    for (unsigned long i = 0; i < new_n; i++) {
+    for (size_t i = 0; i < new_n; i++) {
       used.push_back(queue.top());
       queue.pop();
     }
   }
 
   vector<string> clss;
-  for (auto &cls_pair : _classes) {
-    clss.push_back(cls_pair.first);
-  }
+  transform(_classes.begin(), _classes.end(), back_inserter(clss), [](const auto& cls_pair) {
+    return cls_pair.first;
+  });
 
   return block(clss, used);
 }
@@ -241,7 +236,7 @@ void WordMatrix::calculate_probability() {
 
 std::string WordMatrix::predict(const NewsItem &itm) {
 
-  map<string, unsigned> wc = itm.word_count;
+  map<string, size_t> wc = itm.word_count;
   // Remove words we are not considering
   vector<string> to_delete;
   for (const auto &wc_pair : wc) {
@@ -252,28 +247,27 @@ std::string WordMatrix::predict(const NewsItem &itm) {
     wc.erase(st);
 
   // Start Calculating probabilities
-  unsigned long n_classes = _classes.size();
+  size_t n_classes = _classes.size();
   VectorXd class_prob = VectorXd::Zero(n_classes);
   for (const auto &wc_pair : wc) {
     unsigned index = _words[wc_pair.first];
-    for (unsigned long i = 0; i < n_classes; i++) {
+    for (size_t i = 0; i < n_classes; i++) {
       double current_wp = pow(_word_probability(i, index), wc_pair.second);
       double& clsp = class_prob(i);
       clsp = (clsp == 0) ? current_wp : clsp * current_wp;
     }
   }
   // Get argmax
-  unsigned long argmax = 0;
+  size_t argmax = 0;
   double mx = 0;
-  for (int i = 0; i < n_classes; i++) {
+  for (size_t i = 0; i < n_classes; i++) {
     if (mx < class_prob(i)) {
       mx = class_prob(i);
       argmax = i;
     }
   }
-  // Get argmax's class string
-  for (const auto &cls_pair : _classes)
-    if (cls_pair.second == argmax)
-      return cls_pair.first;
-  return "";
+  auto found = find_if(_classes.begin(), _classes.end(), [&](const auto& cls_pair) {
+    return cls_pair.second == argmax;
+  });
+  return found->first;
 }

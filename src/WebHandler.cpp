@@ -26,7 +26,7 @@ string WebHandler::Call(const std::string &uri) {
   string readBuffer;
   curl = curl_easy_init();
   if (curl) {
-    curl_easy_setopt(curl, CURLOPT_URL, (url + uri).c_str());
+    curl_easy_setopt(curl, CURLOPT_URL, (url + uri + key).c_str());
     curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "GET");
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "libcurl/1.0");
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -52,12 +52,12 @@ string WebHandler::Call(const std::map<std::string, std::string> &args) {
     if (first)
       first = false;
   }
-  return Call(url);
+  return Call(uri);
 }
 
 WebHandler::WebHandler(std::string key) : apikey(std::move(key)) {}
 
-std::vector<NewsItem> WebHandler::getTop(int n) {
+std::vector<NewsItem> WebHandler::getTop(size_t n) {
   if (!fs::exists("stop_words.txt") || fs::is_directory("stop_words.txt"))
     throw std::runtime_error("Error: stop_words.txt is not at the binary directory.\n");
   vector<NewsItem> items;
@@ -70,10 +70,10 @@ std::vector<NewsItem> WebHandler::getTop(int n) {
     stop_words.push_back(line);
 
   regex expr("([^\\W_0123456789])+");
-  const int max_per_call = 100;
-  for (int i = 0, j = 0; i < n; i += max_per_call, j++) {
+  const size_t max_per_call = 100;
+  for (size_t i = 0, j = 0; i < n; i += max_per_call, j++) {
     string contents;
-    int rm = n - (i * max_per_call);
+    size_t rm = n - (i * max_per_call);
     map<string, string> args;
     args["country"] = "us";
     args["pageSize"] = to_string(min(rm, max_per_call));

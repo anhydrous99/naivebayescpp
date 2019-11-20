@@ -11,7 +11,7 @@
 #include <vector>
 #include <map>
 
-typedef Eigen::Matrix<unsigned, Eigen::Dynamic, Eigen::Dynamic> MatrixXi;
+typedef Eigen::Matrix<size_t, Eigen::Dynamic, Eigen::Dynamic> MatrixXi;
 typedef Eigen::MatrixXd MatrixXd;
 typedef Eigen::VectorXd VectorXd;
 
@@ -19,8 +19,8 @@ typedef Eigen::VectorXd VectorXd;
 class WordMatrix {
   MatrixXi _word_count;
   MatrixXd _word_probability;
-  std::map<std::string, unsigned> _classes;
-  std::map<std::string, unsigned> _words;
+  std::map<std::string, size_t> _classes;
+  std::map<std::string, size_t> _words;
   bool probability_calculated = false;
 
   template<typename T, int N, int M>
@@ -44,42 +44,41 @@ public:
    * @param classes A map of classes where the key is the class and the value is the column index of the matrix
    * @param words A map of words where the key is the word and the value is the row index of the matrix
    */
-  WordMatrix(const MatrixXi &word_count, const std::map<std::string, unsigned> &classes,
-             const std::map<std::string, unsigned> &words);
+  WordMatrix(MatrixXi word_count, std::map<std::string, size_t> classes, std::map<std::string, size_t> words);
 
   /*!
    * Gets the total words in the data
    * @return The total words
    */
-  unsigned getTotalWords();
+  size_t getTotalWords();
 
   /*!
    * Gets the total words in a class
    * @param cls The class to sum the words for
    * @return The total words with class cls
    */
-  unsigned getClassTotal(const std::string &cls);
+  size_t getClassTotal(const std::string &cls);
 
   /*!
    * Gets the total number of occurrences of a word in all classes
    * @param word The word to sum for
    * @return The total number of occurrences of the word
    */
-  unsigned getWordTotal(const std::string &word);
+  size_t getWordTotal(const std::string &word);
 
   /*!
    * Gets the total words for a set of classes
    * @param clss A vector of the classes to sum for
    * @return The total words present in the classes provided
    */
-  unsigned getClassTotal(const std::vector<std::string> &clss);
+  size_t getClassTotal(const std::vector<std::string> &clss);
 
   /*!
    * Gets the total number of occurrences of a set of words in all classes
    * @param words The words in vector of strings
    * @return The total number of occurrences for the set of words
    */
-  unsigned getWordTotal(const std::vector<std::string> &words);
+  size_t getWordTotal(const std::vector<std::string> &words);
 
   /*!
    * Gets the number of occurrences of a word in a class
@@ -87,7 +86,7 @@ public:
    * @param word The word
    * @return The count
    */
-  unsigned &getCount(const std::string &clss, const std::string &word);
+  size_t &getCount(const std::string &clss, const std::string &word);
 
   /*!
    * Gets the number of occurences of a word in a set of classes
@@ -95,7 +94,7 @@ public:
    * @param word The word
    * @return The count
    */
-  unsigned getCount(const std::vector<std::string> &cls, const std::string &word);
+  size_t getCount(const std::vector<std::string> &cls, const std::string &word);
 
   /*!
    * Gets the number of occurences of a set of words in a class
@@ -103,7 +102,7 @@ public:
    * @param wrds The set of words in a vector of strings
    * @return The count
    */
-  unsigned getCount(const std::string &cls, const std::vector<std::string> &wrds);
+  size_t getCount(const std::string &cls, const std::vector<std::string> &wrds);
 
   /*!
    * Gets the number of occurences of a set of words in a set of classes
@@ -111,7 +110,7 @@ public:
    * @param wrds The set of words in a vector of strings
    * @return The count
    */
-  unsigned getCount(const std::vector<std::string> &clss, std::vector<std::string> &wrds);
+  size_t getCount(const std::vector<std::string> &clss, const std::vector<std::string> &wrds);
 
   /*!
    * Gets a submatrix of the matrix with the specified classes and words
@@ -133,7 +132,7 @@ public:
    * @param n The number of classes in the resulting WordMatrix
    * @return A WordMatrix with n classes
    */
-  WordMatrix prune_classes(unsigned long n);
+  WordMatrix prune_classes(size_t n);
 
   /*!
    * Prints the probabilities of the words in an output stream
@@ -184,7 +183,7 @@ public:
    * @param n The total words per class
    * @return A sub-matrix with only the n most frequent words as described above
    */
-  WordMatrix getMostFrequent(unsigned long n);
+  WordMatrix getMostFrequent(size_t n);
 
   std::string predict(const NewsItem &itm);
 };
