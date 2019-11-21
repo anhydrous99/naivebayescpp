@@ -92,6 +92,10 @@ vector<string> Parser::get_classes() {
   return output;
 }
 
+vector<NewsItem> Parser::get_items() {
+  return items;
+}
+
 void Parser::prune_per_class(unsigned long max_per_classes) {
   random_device r;
   mt19937 gen(r());

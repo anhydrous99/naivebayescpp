@@ -35,10 +35,10 @@ int main(int argc, char **argv) {
     if (arg_results.count("full_path") == 1) {
       // TODO: run offline benchmarks
       // 1. The classifier is trained on the mini group benchmarked against the full group
-      Parser p(arg_results["path"].as<string>());
-      Parser parsed_test1 = p;
-      Parser parsed_test2 = p;
-      Parser parsed_test3 = p;
+      Parser mini_newsgroup_parser(arg_results["path"].as<string>());
+      Parser parsed_test1 = mini_newsgroup_parser;
+      Parser parsed_test2 = mini_newsgroup_parser;
+      Parser parsed_test3 = mini_newsgroup_parser;
       // Prune parsers to k specified files
       parsed_test1.prune_per_class(10);
       parsed_test2.prune_per_class(20);
@@ -47,6 +47,9 @@ int main(int argc, char **argv) {
       WordMatrix mat_test1 = parsed_test1.getMatrix().prune_classes(5).getMostFrequent(25);
       WordMatrix mat_test2 = parsed_test2.getMatrix().prune_classes(5).getMostFrequent(25);
       WordMatrix mat_test3 = parsed_test3.getMatrix().prune_classes(10).getMostFrequent(50);
+      // Parse new group of news items
+      Parser newsgroup_parser(arg_results["full_path"].as<string>());
+      vector<NewsItem> to_clasifiy = newsgroup_parser.get_items();
     } else {
       // TODO: run online benchmarks
       // 1. Create re-classifier to reclassify according to online classifications

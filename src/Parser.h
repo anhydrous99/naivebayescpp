@@ -33,6 +33,12 @@ public:
   std::vector<std::string> get_classes();
 
   /*!
+   * Get the NewsItems from the parser
+   * @return A vector of NewsItem objects
+   */
+  std::vector<NewsItem> get_items();
+
+  /*!
    * Gets the maximum on a per class basis
    * @param max_per_classes The max
    */
