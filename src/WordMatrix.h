@@ -186,6 +186,10 @@ public:
   WordMatrix getMostFrequent(size_t n);
 
   std::string predict(const NewsItem &itm);
+
+  std::vector<std::string> getWords();
+
+  std::vector<std::string> getClasses();
 };
 
 // ---- Template Function Implementations ----

@@ -16,4 +16,6 @@ struct NewsItem {
   std::string contents; //! The full contents of the news item
 };
 
+bool operator==(const NewsItem &itm1, const NewsItem &itm2);
+
 #endif //NAIVEBAYESCPP_NEWSITEM_H

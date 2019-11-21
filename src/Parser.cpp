@@ -124,3 +124,17 @@ void Parser::prune_per_class(unsigned long max_per_classes) {
   }
   items = new_items;
 }
+
+Parser Parser::get_items_of_classes(const std::vector<std::string> &classes) {
+  Parser new_parser = *this;
+  for (const auto& itm : items) {
+    bool found = false;
+    for (const auto& cls : classes) {
+      if (itm.collection == cls)
+        found = true;
+    }
+    if (!found)
+      new_parser.items.erase(remove(new_parser.items.begin(), new_parser.items.end(), itm), new_parser.items.end());
+  }
+  return new_parser;
+}

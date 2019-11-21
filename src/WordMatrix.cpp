@@ -223,7 +223,7 @@ void WordMatrix::printLatexFrequency() {
 void WordMatrix::calculate_probability() {
   if (probability_calculated)
     return;
-  _word_probability(_classes.size(), _words.size());
+  _word_probability = MatrixXd::Zero(_classes.size(), _words.size());
   for (const auto &class_pair : _classes) {
     double class_total = static_cast<double>(_word_count.row(class_pair.second).sum());
     for (const auto &word_pair : _words) {
@@ -235,7 +235,7 @@ void WordMatrix::calculate_probability() {
 }
 
 std::string WordMatrix::predict(const NewsItem &itm) {
-
+  calculate_probability();
   map<string, size_t> wc = itm.word_count;
   // Remove words we are not considering
   vector<string> to_delete;
@@ -246,15 +246,23 @@ std::string WordMatrix::predict(const NewsItem &itm) {
   for (const string &st : to_delete)
     wc.erase(st);
 
-  // Start Calculating probabilities
+  // Get class count
   size_t n_classes = _classes.size();
+  auto class_itr = _classes.begin();
+  VectorXd class_count = VectorXd::Zero(n_classes);
+  for (size_t i = 0; i < n_classes; i++) {
+    class_count[i] = getClassTotal((*class_itr++).first);
+  }
+  class_count /= class_count.sum();
+
+  // Start Calculating probabilities
   VectorXd class_prob = VectorXd::Zero(n_classes);
   for (const auto &wc_pair : wc) {
     unsigned index = _words[wc_pair.first];
     for (size_t i = 0; i < n_classes; i++) {
       double current_wp = pow(_word_probability(i, index), wc_pair.second);
       double& clsp = class_prob(i);
-      clsp = (clsp == 0) ? current_wp : clsp * current_wp;
+      clsp = (clsp == 0) ? class_count[i] * current_wp : clsp * current_wp;
     }
   }
   // Get argmax
@@ -270,4 +278,20 @@ std::string WordMatrix::predict(const NewsItem &itm) {
     return cls_pair.second == argmax;
   });
   return found->first;
+}
+
+vector<string> WordMatrix::getWords() {
+  vector<string> words;
+  transform(_words.begin(), _words.end(), back_inserter(words), [](const auto& word_pair) {
+    return word_pair.first;
+  });
+  return words;
+}
+
+vector<string> WordMatrix::getClasses() {
+  vector<string> classes;
+  transform(_classes.begin(), _classes.end(), back_inserter(classes), [](const auto& cls_pair) {
+    return cls_pair.first;
+  });
+  return classes;
 }

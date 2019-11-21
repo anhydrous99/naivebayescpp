@@ -43,6 +43,8 @@ public:
    * @param max_per_classes The max
    */
   void prune_per_class(unsigned long max_per_classes);
+
+  Parser get_items_of_classes(const std::vector<std::string> &classes);
 };
 
 

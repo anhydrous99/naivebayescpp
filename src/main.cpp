@@ -7,10 +7,11 @@
 using namespace std;
 
 
-float test_battery(const vector<NewsItem> &to_test, WordMatrix &classifier) {
+float test_battery(const vector<NewsItem> &to_test, WordMatrix classifier) {
   size_t correct = 0;
   for (const NewsItem& itm : to_test) {
-    if (itm.collection == classifier.predict(itm)) {
+    string classified = classifier.predict(itm);
+    if (itm.collection == classified) {
       correct++;
     }
   }
@@ -64,19 +65,14 @@ int main(int argc, char **argv) {
       WordMatrix mat_test2 = parsed_test2.getMatrix().prune_classes(5).getMostFrequent(25);
       WordMatrix mat_test3 = parsed_test3.getMatrix().prune_classes(10).getMostFrequent(50);
 
-      // Parse new group of news items
-      vector<NewsItem> to_classify;
-      if (arg_results.count("full_path") == 1) {
-        Parser newsgroup_parser(arg_results["full_path"].as<string>());
-        to_classify = newsgroup_parser.get_items();
-      } else {
-        to_classify = mini_newsgroup_parser.get_items();
-      }
+      auto gcp = [](Parser p, WordMatrix mat) {
+        return p.get_items_of_classes(mat.getClasses()).get_items();
+      };
 
       // Run tests
-      float test1_accuracy = test_battery(to_classify, mat_test1);
-      float test2_accuracy = test_battery(to_classify, mat_test2);
-      float test3_accuracy = test_battery(to_classify, mat_test3);
+      float test1_accuracy = test_battery(gcp(mini_newsgroup_parser, mat_test1), mat_test1);
+      float test2_accuracy = test_battery(gcp(mini_newsgroup_parser, mat_test2), mat_test2);
+      float test3_accuracy = test_battery(gcp(mini_newsgroup_parser, mat_test3), mat_test3);
 
       // Display results
       cout << " Test 1 - accuracy " << test1_accuracy << endl;
