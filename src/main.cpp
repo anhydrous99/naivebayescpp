@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
     part1(newgroup_path, (arg_results.count("test_latex") != 0),
           (arg_results.count("save_csv") != 0));
   } else if (arg_results.count("run_second_part") != 0) {
-    if (arg_results.count("full_path") == 1 || arg_results.count("classifiy_trained") == 1) {
+    if (arg_results.count("full_path") == 1 || arg_results.count("classify_trained") == 1) {
 
       // ******************* RUN OFFLINE TESTS ********************
 
