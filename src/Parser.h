@@ -45,6 +45,13 @@ public:
   void prune_per_class(unsigned long max_per_classes);
 
   Parser get_items_of_classes(const std::vector<std::string> &classes);
+
+  /*!
+   * Prunes the number of classes randomly to n
+   * @param n The number of classes in the resulting WordMatrix
+   * @return A WordMatrix with n classes
+   */
+  Parser prune_classes(size_t n);
 };
 
 

@@ -2,6 +2,7 @@
 // Created by armando on 11/10/19.
 //
 
+#include "utils.h"
 #include "Parser.h"
 #include "filesystem.h"
 #include <regex>
@@ -134,6 +135,20 @@ Parser Parser::get_items_of_classes(const std::vector<std::string> &classes) {
         found = true;
     }
     if (!found)
+      new_parser.items.erase(remove(new_parser.items.begin(), new_parser.items.end(), itm), new_parser.items.end());
+  }
+  return new_parser;
+}
+
+Parser Parser::prune_classes(size_t n) {
+  Parser new_parser = *this;
+  random_device rd;
+  mt19937 g(rd());
+  vector<string> clss;
+  vector<string> classes = get_classes();
+  vector<string> new_classes = sample(classes.begin(), classes.end(), n, g);
+  for (const auto& itm : items) {
+    if (find(new_classes.begin(), new_classes.end(), itm.collection) == new_classes.end())
       new_parser.items.erase(remove(new_parser.items.begin(), new_parser.items.end(), itm), new_parser.items.end());
   }
   return new_parser;

@@ -9,12 +9,18 @@ using namespace std;
 
 float test_battery(const vector<NewsItem> &to_test, WordMatrix classifier) {
   size_t correct = 0;
+  auto classes = classifier.getClasses();
+  for (const auto& cls : classes)
+    cout << classifier.class_index(cls) << ";" << cls << " ";
+  cout << endl;
   for (const NewsItem& itm : to_test) {
+    cout << itm.collection << endl;
     string classified = classifier.predict(itm);
-    if (itm.collection == classified) {
+    if (itm.collection == classified)
       correct++;
-    }
+    cout << itm.collection << " " << classified << endl;
   }
+  cout << endl << endl;
   return static_cast<float>(correct) / static_cast<float>(to_test.size());
 }
 
@@ -51,9 +57,10 @@ int main(int argc, char **argv) {
 
       // 1. The classifier is trained on the mini group benchmarked against the full group
       Parser mini_newsgroup_parser(arg_results["path"].as<string>());
-      Parser parsed_test1 = mini_newsgroup_parser;
-      Parser parsed_test2 = mini_newsgroup_parser;
-      Parser parsed_test3 = mini_newsgroup_parser;
+
+      Parser parsed_test1 = mini_newsgroup_parser.prune_classes(5);
+      Parser parsed_test2 = mini_newsgroup_parser.prune_classes(5);
+      Parser parsed_test3 = mini_newsgroup_parser.prune_classes(10);
 
       // Prune parsers to k specified files
       parsed_test1.prune_per_class(10);
@@ -61,18 +68,14 @@ int main(int argc, char **argv) {
       parsed_test3.prune_per_class(10);
 
       // Create word matrices
-      WordMatrix mat_test1 = parsed_test1.getMatrix().prune_classes(5).getMostFrequent(25);
-      WordMatrix mat_test2 = parsed_test2.getMatrix().prune_classes(5).getMostFrequent(25);
-      WordMatrix mat_test3 = parsed_test3.getMatrix().prune_classes(10).getMostFrequent(50);
-
-      auto gcp = [](Parser p, WordMatrix mat) {
-        return p.get_items_of_classes(mat.getClasses()).get_items();
-      };
+      WordMatrix mat_test1 = parsed_test1.getMatrix().getMostFrequent(25);
+      WordMatrix mat_test2 = parsed_test2.getMatrix().getMostFrequent(25);
+      WordMatrix mat_test3 = parsed_test3.getMatrix().getMostFrequent(50);
 
       // Run tests
-      float test1_accuracy = test_battery(gcp(mini_newsgroup_parser, mat_test1), mat_test1);
-      float test2_accuracy = test_battery(gcp(mini_newsgroup_parser, mat_test2), mat_test2);
-      float test3_accuracy = test_battery(gcp(mini_newsgroup_parser, mat_test3), mat_test3);
+      float test1_accuracy = test_battery(parsed_test1.get_items(), mat_test1);
+      float test2_accuracy = test_battery(parsed_test2.get_items(), mat_test2);
+      float test3_accuracy = test_battery(parsed_test3.get_items(), mat_test3);
 
       // Display results
       cout << " Test 1 - accuracy " << test1_accuracy << endl;

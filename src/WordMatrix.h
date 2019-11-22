@@ -190,6 +190,10 @@ public:
   std::vector<std::string> getWords();
 
   std::vector<std::string> getClasses();
+
+  size_t word_index(const std::string word);
+
+  size_t class_index(const std::string cls);
 };
 
 // ---- Template Function Implementations ----

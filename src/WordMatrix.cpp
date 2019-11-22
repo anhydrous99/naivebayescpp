@@ -8,6 +8,7 @@
 #include <iostream>
 #include <set>
 #include <cmath>
+#include <limits>
 
 using namespace std;
 
@@ -110,12 +111,12 @@ WordMatrix WordMatrix::block(const std::vector<std::string> &clss, const std::ve
   map<string, size_t> new_class_map;
   map<string, size_t> new_word_map;
 
+  for (int i = 0; i < m; i++)
+    new_word_map[wrds[i]] = i;
+
   for (size_t i = 0; i < n; i++) {
     new_class_map[clss[i]] = i;
     for (size_t j = 0; j < m; j++) {
-      if (i == 0)
-        new_word_map[wrds[j]] = j;
-
       new_mat(i, j) = getCount(clss[i], wrds[j]);
     }
   }
@@ -248,28 +249,31 @@ std::string WordMatrix::predict(const NewsItem &itm) {
 
   // Get class count
   size_t n_classes = _classes.size();
-  auto class_itr = _classes.begin();
   VectorXd class_count = VectorXd::Zero(n_classes);
-  for (size_t i = 0; i < n_classes; i++) {
-    class_count[i] = getClassTotal((*class_itr++).first);
+  for (const auto& class_pair : _classes) {
+    class_count[class_pair.second] = getClassTotal(class_pair.first);
   }
+  //class_count.normalize();
   class_count /= class_count.sum();
 
   // Start Calculating probabilities
   VectorXd class_prob = VectorXd::Zero(n_classes);
   for (const auto &wc_pair : wc) {
     unsigned index = _words[wc_pair.first];
-    for (size_t i = 0; i < n_classes; i++) {
-      double current_wp = pow(_word_probability(i, index), wc_pair.second);
-      double& clsp = class_prob(i);
-      clsp = (clsp == 0) ? class_count[i] * current_wp : clsp * current_wp;
+    for (const auto& cls_pair : _classes) {
+      double current_wp = pow(_word_probability(cls_pair.second, index), wc_pair.second);
+      double& clsp = class_prob(cls_pair.second);
+      clsp = (clsp == 0) ? class_count[cls_pair.second] * current_wp : clsp * current_wp;
     }
   }
+  // Normalize
+  class_prob /= class_prob.sum();
+  cout << class_prob << endl;
   // Get argmax
   size_t argmax = 0;
-  double mx = 0;
+  double mx = numeric_limits<double>::max();
   for (size_t i = 0; i < n_classes; i++) {
-    if (mx < class_prob(i)) {
+    if (mx > class_prob(i)) {
       mx = class_prob(i);
       argmax = i;
     }
@@ -294,4 +298,12 @@ vector<string> WordMatrix::getClasses() {
     return cls_pair.first;
   });
   return classes;
+}
+
+size_t WordMatrix::word_index(const std::string word) {
+  return _words[word];
+}
+
+size_t WordMatrix::class_index(const std::string cls) {
+  return _classes[cls];
 }
