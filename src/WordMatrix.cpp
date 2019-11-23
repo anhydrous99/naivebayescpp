@@ -268,7 +268,6 @@ std::string WordMatrix::predict(const NewsItem &itm) {
   }
   // Normalize
   class_prob /= class_prob.sum();
-  cout << class_prob << endl;
   // Get argmax
   size_t argmax = 0;
   double mx = numeric_limits<double>::max();

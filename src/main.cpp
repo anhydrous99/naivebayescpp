@@ -1,26 +1,25 @@
 #include <iostream>
 #include <cxxopts.hpp>
+#include <chrono>
 
 #include "Parser.h"
 #include "utils.h"
 
 using namespace std;
+using namespace chrono;
+typedef high_resolution_clock hrc;
 
 
-float test_battery(const vector<NewsItem> &to_test, WordMatrix classifier) {
+float test_battery(const vector<NewsItem> &to_test, WordMatrix classifier, const string &test_name) {
+  auto t1 = hrc::now();
   size_t correct = 0;
-  auto classes = classifier.getClasses();
-  for (const auto& cls : classes)
-    cout << classifier.class_index(cls) << ";" << cls << " ";
-  cout << endl;
   for (const NewsItem& itm : to_test) {
-    cout << itm.collection << endl;
     string classified = classifier.predict(itm);
     if (itm.collection == classified)
       correct++;
-    cout << itm.collection << " " << classified << endl;
   }
-  cout << endl << endl;
+  auto t2 = hrc::now();
+  cout << "Test " << test_name << ": " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
   return static_cast<float>(correct) / static_cast<float>(to_test.size());
 }
 
@@ -56,26 +55,46 @@ int main(int argc, char **argv) {
       // ******************* RUN OFFLINE TESTS ********************
 
       // 1. The classifier is trained on the mini group benchmarked against the full group
+      cout  << "Parsing\n";
+      auto t1 = hrc::now();
       Parser mini_newsgroup_parser(arg_results["path"].as<string>());
+      auto t2 = hrc::now();
+      cout << "Parse time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
 
+      cout << "Prune classes\n";
+      t1 = hrc::now();
       Parser parsed_test1 = mini_newsgroup_parser.prune_classes(5);
       Parser parsed_test2 = mini_newsgroup_parser.prune_classes(5);
       Parser parsed_test3 = mini_newsgroup_parser.prune_classes(10);
+      t2 = hrc::now();
+      cout << "Class prune time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
 
       // Prune parsers to k specified files
+      cout << "Prune text files\n";
+      t1 = hrc::now();
       parsed_test1.prune_per_class(10);
       parsed_test2.prune_per_class(20);
       parsed_test3.prune_per_class(10);
+      t2 = hrc::now();
+      cout <<"Text file prune time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
 
       // Create word matrices
+      cout << "Create word matrices\n";
+      t1 = hrc::now();
       WordMatrix mat_test1 = parsed_test1.getMatrix().getMostFrequent(25);
       WordMatrix mat_test2 = parsed_test2.getMatrix().getMostFrequent(25);
       WordMatrix mat_test3 = parsed_test3.getMatrix().getMostFrequent(50);
+      t2 = hrc::now();
+      cout << "Word matrix creation time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
 
       // Run tests
-      float test1_accuracy = test_battery(parsed_test1.get_items(), mat_test1);
-      float test2_accuracy = test_battery(parsed_test2.get_items(), mat_test2);
-      float test3_accuracy = test_battery(parsed_test3.get_items(), mat_test3);
+      cout << "Running test batteries\n";
+      float test1_accuracy = test_battery(parsed_test1.get_items(), mat_test1,
+          "5 class, 25 most frequent words, 10 text files per class");
+      float test2_accuracy = test_battery(parsed_test2.get_items(), mat_test2,
+          "5 class, 25 most frequent words, 20 text files per class");
+      float test3_accuracy = test_battery(parsed_test3.get_items(), mat_test3,
+          "10 class, 50 most frequent words, 10 text files per class");
 
       // Display results
       cout << " Test 1 - accuracy " << test1_accuracy << endl;
