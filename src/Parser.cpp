@@ -41,6 +41,7 @@ Parser::Parser(const string &path) {
   string line;
   while (getline(stop_words_stream, line))
     stop_words.push_back(line);
+  sort(stop_words.begin(), stop_words.end());
 
   // Recursively iterate through the directory looking for files
   fs::recursive_directory_iterator it{path};
@@ -64,9 +65,9 @@ Parser::Parser(const string &path) {
       auto regit = sregex_iterator(txt.begin(), txt.end(), expr);
       auto end = sregex_iterator();
       while (regit != end) {
-        std::string word = (*regit++).str();
+        string word = (*regit++).str();
         // If word is a stop word ignore
-        if (std::find(stop_words.begin(), stop_words.end(), word) != stop_words.end())
+        if (binary_search(stop_words.begin(), stop_words.end(), word))
           continue;
         // Add to map of words
         auto map_itr = itm.word_count.find(word);

@@ -35,6 +35,8 @@ int main(int argc, char **argv) {
   options.add_options("part_2")
       ("run_second_part", "Run second part's Code")
       ("f,full_path", "Path to full newsgroup dataset", cxxopts::value<string>())
+      ("optimizer_iterations", "Number of iterations to run the optimizer",
+              cxxopts::value<size_t>()->default_value("100"))
       ("classify_trained", "Run classifier on data it was trained on");
   auto arg_results = options.parse(argc, argv);
   if (arg_results.arguments().empty() || arg_results.count("help") != 0) {
@@ -62,10 +64,11 @@ int main(int argc, char **argv) {
       cout << "Parse time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
 
       cout << "Optimizing\n";
+      size_t n_iterations = arg_results["optimizer_iterations"].as<size_t>();
       t1 = hrc::now();
-      Parser parsed_test1 = optimizer(mini_newsgroup_parser, 5, 10, 25, 100);
-      Parser parsed_test2 = optimizer(mini_newsgroup_parser, 5, 20, 25, 100);
-      Parser parsed_test3 = optimizer(mini_newsgroup_parser, 10, 10, 50, 100);
+      Parser parsed_test1 = optimizer(mini_newsgroup_parser, 5, 10, 25, n_iterations);
+      Parser parsed_test2 = optimizer(mini_newsgroup_parser, 5, 20, 25, n_iterations);
+      Parser parsed_test3 = optimizer(mini_newsgroup_parser, 10, 10, 50, n_iterations);
       t2 = hrc::now();
       cout << "Optimization time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
 
