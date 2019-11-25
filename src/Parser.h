@@ -44,6 +44,11 @@ public:
    */
   void prune_per_class(unsigned long max_per_classes);
 
+  /*!
+   * This function returns a Parser object with only those items of classes provided
+   * @param classes The classes as a vector of strings
+   * @return The resulting Parser with only the classes provided
+   */
   Parser get_items_of_classes(const std::vector<std::string> &classes);
 
   /*!

@@ -151,10 +151,7 @@ WordMatrix WordMatrix::block(const std::vector<std::string> &clss) {
 WordMatrix WordMatrix::prune_classes(size_t n) {
   random_device rd;
   mt19937 g(rd());
-  vector<string> clss;
-  transform(_classes.begin(), _classes.end(), back_inserter(clss), [](const auto& cls_pair) {
-    return cls_pair.first;
-  });
+  vector<string> clss = getClasses();
   return block(sample(clss.begin(), clss.end(), n, g));
 }
 
@@ -195,12 +192,7 @@ WordMatrix WordMatrix::getMostFrequent(size_t n) {
       queue.pop();
     }
   }
-
-  vector<string> clss;
-  transform(_classes.begin(), _classes.end(), back_inserter(clss), [](const auto& cls_pair) {
-    return cls_pair.first;
-  });
-
+  vector<string> clss = getClasses();
   return block(clss, used);
 }
 
@@ -299,10 +291,10 @@ vector<string> WordMatrix::getClasses() {
   return classes;
 }
 
-size_t WordMatrix::word_index(const std::string word) {
+size_t WordMatrix::word_index(const std::string &word) {
   return _words[word];
 }
 
-size_t WordMatrix::class_index(const std::string cls) {
+size_t WordMatrix::class_index(const std::string &cls) {
   return _classes[cls];
 }

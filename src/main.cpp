@@ -35,7 +35,8 @@ int main(int argc, char **argv) {
   options.add_options("part_2")
       ("run_second_part", "Run second part's Code")
       ("f,full_path", "Path to full newsgroup dataset", cxxopts::value<string>())
-      ("classify_trained", "Run classifier on data it was trained on");
+      ("classify_trained", "Run classifier on data it was trained on")
+      ("optimize", "Find optimal classes and text files");
   auto arg_results = options.parse(argc, argv);
   if (arg_results.arguments().empty() || arg_results.count("help") != 0) {
     cout << options.help({"", "part_1", "part_2"});

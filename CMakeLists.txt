@@ -27,6 +27,7 @@ add_executable(naivebayescpp
         src/utils.cpp
         src/WebHandler.cpp
         src/WebHandler.h
-        src/filesystem.h src/NewsItem.cpp)
+        src/filesystem.h
+        src/NewsItem.cpp)
 target_link_libraries(naivebayescpp stdc++fs eigen libcurl cxxopts nlohmann_json)
 configure_file(${CMAKE_SOURCE_DIR}/stop_words.txt ${CMAKE_BINARY_DIR}/stop_words.txt)

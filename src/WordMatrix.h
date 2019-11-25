@@ -89,6 +89,14 @@ public:
   size_t &getCount(const std::string &clss, const std::string &word);
 
   /*!
+   * Gets the number of occurrences of a word in class
+   * @param i The ith column in the WordMatrx
+   * @param j The jth row in the WordMatrix
+   * @return The count
+   */
+  size_t &getCount(size_t i, size_t j);
+
+  /*!
    * Gets the number of occurences of a word in a set of classes
    * @param cls The set of classes in a vector of strings
    * @param word The word
@@ -185,15 +193,38 @@ public:
    */
   WordMatrix getMostFrequent(size_t n);
 
+  /*!
+   * Predict the class of a NewsItem
+   * @param itm The NewsItem to inference
+   * @return The class' string
+   */
   std::string predict(const NewsItem &itm);
 
+  /*!
+   * Gets the words in the WordMatrix
+   * @return The words in the WordMatrix as a vector of strings
+   */
   std::vector<std::string> getWords();
 
+  /*!
+   * Gets the classes in the WordMatrix
+   * @return The classes in the WordMatrix as a vector of strings
+   */
   std::vector<std::string> getClasses();
 
-  size_t word_index(const std::string word);
+  /*!
+   * Gets the index, in the WordMatrix, of a word
+   * @param word The word
+   * @return The WordMatrix's index
+   */
+  size_t word_index(const std::string &word);
 
-  size_t class_index(const std::string cls);
+  /*!
+   * Gets the index, in the WordMatrix, of a class
+   * @param cls The class
+   * @return The WordMatrix's index
+   */
+  size_t class_index(const std::string &cls);
 };
 
 // ---- Template Function Implementations ----
