@@ -135,7 +135,7 @@ Parser optimizer(const Parser &p, size_t n_classes, size_t n_textfiles, size_t m
         return static_cast<float>(correct) / static_cast<float>(items.size());
     };
 
-    auto get_lambda = [](uint_fast32_t random_seed, size_t n_clss, size_t n_tf, size_t mf, Parser p) {
+    auto get_lambda = [](uint_fast32_t random_seed, size_t n_clss, size_t n_tf, Parser p) {
         mt19937 gen(random_seed);
         vector<string> cls = p.get_classes();
         cls = sample(cls.begin(), cls.end(), n_clss, gen);
@@ -165,5 +165,5 @@ Parser optimizer(const Parser &p, size_t n_classes, size_t n_textfiles, size_t m
         }
     }
 
-    return get_lambda(max_seed, n_classes, n_textfiles, most_frequent, p);
+    return get_lambda(max_seed, n_classes, n_textfiles, p);
 }

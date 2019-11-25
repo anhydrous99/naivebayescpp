@@ -6,6 +6,7 @@
 #include "utils.h"
 #include <queue>
 #include <iostream>
+#include <numeric>
 #include <set>
 #include <cmath>
 #include <limits>
@@ -243,7 +244,7 @@ std::string WordMatrix::predict(const NewsItem &itm) {
   size_t n_classes = _classes.size();
   VectorXd class_count = VectorXd::Zero(n_classes);
   for (const auto& class_pair : _classes) {
-    class_count[class_pair.second] = getClassTotal(class_pair.first);
+    class_count[class_pair.second] = static_cast<double>(getClassTotal(class_pair.first));
   }
   //class_count.normalize();
   class_count /= class_count.sum();
