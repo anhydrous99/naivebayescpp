@@ -35,8 +35,7 @@ int main(int argc, char **argv) {
   options.add_options("part_2")
       ("run_second_part", "Run second part's Code")
       ("f,full_path", "Path to full newsgroup dataset", cxxopts::value<string>())
-      ("classify_trained", "Run classifier on data it was trained on")
-      ("optimize", "Find optimal classes and text files");
+      ("classify_trained", "Run classifier on data it was trained on");
   auto arg_results = options.parse(argc, argv);
   if (arg_results.arguments().empty() || arg_results.count("help") != 0) {
     cout << options.help({"", "part_1", "part_2"});
@@ -62,22 +61,13 @@ int main(int argc, char **argv) {
       auto t2 = hrc::now();
       cout << "Parse time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
 
-      cout << "Prune classes\n";
+      cout << "Optimizing\n";
       t1 = hrc::now();
-      Parser parsed_test1 = mini_newsgroup_parser.prune_classes(5);
-      Parser parsed_test2 = mini_newsgroup_parser.prune_classes(5);
-      Parser parsed_test3 = mini_newsgroup_parser.prune_classes(10);
+      Parser parsed_test1 = optimizer(mini_newsgroup_parser, 5, 10, 25, 100);
+      Parser parsed_test2 = optimizer(mini_newsgroup_parser, 5, 20, 25, 100);
+      Parser parsed_test3 = optimizer(mini_newsgroup_parser, 10, 10, 50, 100);
       t2 = hrc::now();
-      cout << "Class prune time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
-
-      // Prune parsers to k specified files
-      cout << "Prune text files\n";
-      t1 = hrc::now();
-      parsed_test1.prune_per_class(10);
-      parsed_test2.prune_per_class(20);
-      parsed_test3.prune_per_class(10);
-      t2 = hrc::now();
-      cout <<"Text file prune time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
+      cout << "Optimization time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
 
       // Create word matrices
       cout << "Create word matrices\n";

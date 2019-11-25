@@ -97,11 +97,11 @@ vector<NewsItem> Parser::get_items() {
   return items;
 }
 
-void Parser::prune_per_class(unsigned long max_per_classes) {
+void Parser::prune_per_class(size_t max_per_classes) {
   random_device r;
   mt19937 gen(r());
 
-  vector<unsigned long> indices(items.size());
+  vector<size_t> indices(items.size());
 #ifdef __linux__
   iota(indices.begin(), indices.end(), 0);
 #elif __WIN32
@@ -110,7 +110,7 @@ void Parser::prune_per_class(unsigned long max_per_classes) {
 #endif
   shuffle(indices.begin(), indices.end(), gen);
 
-  map<string, unsigned long> item_count;
+  map<string, size_t> item_count;
   vector<NewsItem> new_items;
   for (const auto &itm : items) {
     auto itr = item_count.find(itm.collection);
@@ -124,6 +124,34 @@ void Parser::prune_per_class(unsigned long max_per_classes) {
     }
   }
   items = new_items;
+}
+
+void Parser::prune_per_class(uint_fast32_t random_seed, size_t max_per_classes) {
+    mt19937 gen(random_seed);
+
+    vector<size_t> indices(items.size());
+#ifdef __linux__
+    iota(indices.begin(), indices.end(), 0);
+#elif __WIN32
+    for (int i = 0; i < indices.size(); i++)
+      indices[i] =i;
+#endif
+    shuffle(indices.begin(), indices.end(), gen);
+
+    map<string, size_t> item_count;
+    vector<NewsItem> new_items;
+    for (const auto &itm : items) {
+        auto itr = item_count.find(itm.collection);
+        if (itr != item_count.end()) {
+            if (itr->second != max_per_classes) {
+                new_items.push_back(itm);
+                itr->second++;
+            }
+        } else {
+            item_count[itm.collection];
+        }
+    }
+    items = new_items;
 }
 
 Parser Parser::get_items_of_classes(const std::vector<std::string> &classes) {

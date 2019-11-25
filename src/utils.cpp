@@ -5,6 +5,8 @@
 #include "utils.h"
 #include <iostream>
 #include <fstream>
+#include <random>
+#include <future>
 #include "Parser.h"
 #include "WordMatrix.h"
 
@@ -109,4 +111,59 @@ void part1(const string &newgroup_path, bool print_latex, bool save_csv) {
   }
 
   cout << test1_str << endl << test2_str << endl << test3_str;
+}
+
+Parser optimizer(const Parser &p, size_t n_classes, size_t n_textfiles, size_t most_frequent, size_t n_iterations) {
+    // Init random number generator
+    random_device rd;
+    mt19937 gen(rd());
+
+    // Create function that will on a per task basis
+    auto test_lambda = [](uint_fast32_t random_seed, size_t n_clss, size_t n_tf, size_t mf, Parser p) {
+        mt19937 gen(random_seed);
+        vector<string> classes = p.get_classes();
+        classes = sample(classes.begin(), classes.end(), n_clss, gen);
+        p = p.get_items_of_classes(classes);
+        vector<NewsItem> items = p.get_items();
+        p.prune_per_class(gen(), n_tf);
+        WordMatrix mat = p.getMatrix().getMostFrequent(mf);
+        size_t correct = 0;
+        for (const NewsItem& itm : items) {
+            if (itm.collection == mat.predict(itm))
+                correct++;
+        }
+        return static_cast<float>(correct) / static_cast<float>(items.size());
+    };
+
+    auto get_lambda = [](uint_fast32_t random_seed, size_t n_clss, size_t n_tf, size_t mf, Parser p) {
+        mt19937 gen(random_seed);
+        vector<string> cls = p.get_classes();
+        cls = sample(cls.begin(), cls.end(), n_clss, gen);
+        p = p.get_items_of_classes(cls);
+        p.prune_per_class(gen(), n_tf);
+        return p;
+    };
+
+    vector<future<float>> futures;
+    vector<uint_fast32_t> seeds;
+    for (size_t i = 0; i < n_iterations; i++) {
+        uint_fast32_t seed = gen();
+        seeds.push_back(seed);
+        futures.push_back(async(test_lambda, seed, n_classes, n_textfiles, most_frequent, p));
+    }
+
+    float mx = 0;
+    uint_fast32_t max_seed = 0;
+    for(size_t i = 0; i < futures.size(); i++) {
+        futures[i].wait();
+        if (i % 10 == 0)
+            cout << "Optimizer - iteration : " << i << " - done\n";
+        float current = futures[i].get();
+        if (current > mx) {
+            mx = current;
+            max_seed = seeds[i];
+        }
+    }
+
+    return get_lambda(max_seed, n_classes, n_textfiles, most_frequent, p);
 }

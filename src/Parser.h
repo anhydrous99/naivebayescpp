@@ -42,7 +42,14 @@ public:
    * Gets the maximum on a per class basis
    * @param max_per_classes The max
    */
-  void prune_per_class(unsigned long max_per_classes);
+  void prune_per_class(size_t max_per_classes);
+
+  /*!
+   * Gets the maximum on a per class basis with a preset random seed
+   * @param random_seed The random seed
+   * @param max_per_class The max
+   */
+  void prune_per_class(uint_fast32_t random_seed, size_t max_per_classes);
 
   /*!
    * This function returns a Parser object with only those items of classes provided
@@ -58,6 +65,5 @@ public:
    */
   Parser prune_classes(size_t n);
 };
-
 
 #endif //NAIVEBAYESCPP_PARSER_H

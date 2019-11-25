@@ -8,6 +8,7 @@
 #ifndef NAIVEBAYESCPP_UTILS_H
 #define NAIVEBAYESCPP_UTILS_H
 
+#include "Parser.h"
 #include <vector>
 #include <string>
 #include <random>
@@ -55,5 +56,16 @@ sample(Itr first, Itr last, typename std::iterator_traits<Itr>::difference_type 
     }
     return reservoir;
 }
+
+/*!
+ * Uses a multi-threaded monte-carlo search to find the best classes and text files
+ * @param p The parser
+ * @param n_classes Number of classes to keep
+ * @param n_textfiles Number of textfiles to keep
+ * @param most_frequent The number of most frequent words to calculate while testing
+ * @param n_iterations The number of iteration to run the search for
+ * @return The parser with the best results from the search
+ */
+Parser optimizer(const Parser &p, size_t n_classes, size_t n_textfiles, size_t most_frequent, size_t n_iterations);
 
 #endif //NAIVEBAYESCPP_UTILS_H
