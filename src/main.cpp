@@ -91,12 +91,12 @@ int main(int argc, char **argv) {
 
       // Run tests
       cout << "Running test batteries\n";
-      float test1_accuracy = test_battery(parsed_test1.get_items(), mat_test1,
-          "5 class, 25 most frequent words, 10 text files per class");
-      float test2_accuracy = test_battery(parsed_test2.get_items(), mat_test2,
-          "5 class, 25 most frequent words, 20 text files per class");
-      float test3_accuracy = test_battery(parsed_test3.get_items(), mat_test3,
-          "10 class, 50 most frequent words, 10 text files per class");
+      float test1_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test1.getClasses()).
+              get_items(), mat_test1, "5 class, 25 most frequent words, 10 text files per class");
+      float test2_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test2.getClasses()).
+              get_items(), mat_test2, "5 class, 25 most frequent words, 20 text files per class");
+      float test3_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test3.getClasses()).
+              get_items(), mat_test3, "10 class, 50 most frequent words, 10 text files per class");
 
       // Display results
       cout << " Test 1 - accuracy " << test1_accuracy << endl;
