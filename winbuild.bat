@@ -90,5 +90,5 @@ for %%I in (objs\*.obj) do (
 ECHO %LIBPATHS%
 ECHO %LINK_OBJECTS%
 link /out:naivebayescpp.exe /subsystem:console /nologo /machine:x64 %LIBPATHS% %LINK_OBJECTS%
-
+COPY ..\stop_words.txt
 POPD

@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
           t2 = hrc::now();
           cout << "Parse time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
       } catch (const runtime_error& e) {
-          cerr << "Error: " << e.what() << endl;
+          cerr << e.what() << endl;
           return EXIT_FAILURE;
       }
 
