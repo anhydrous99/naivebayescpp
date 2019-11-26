@@ -143,17 +143,18 @@ Parser optimizer(const Parser &p, size_t n_classes, size_t n_textfiles, size_t m
         p.prune_per_class(gen(), n_tf);
         return p;
     };
-
+    cout << "Optimizer - queuing tasks...\n";
     vector<future<float>> futures;
     vector<uint_fast32_t> seeds;
     for (size_t i = 0; i < n_iterations; i++) {
         uint_fast32_t seed = gen();
         seeds.push_back(seed);
-        futures.push_back(async(test_lambda, seed, n_classes, n_textfiles, most_frequent, p));
+        futures.push_back(async(launch::async, test_lambda, seed, n_classes, n_textfiles, most_frequent, p));
     }
 
     float mx = 0;
     uint_fast32_t max_seed = 0;
+    cout << "Optimizer - queued all tasks.. waiting for all queued tasks to finish...\n";
     for(size_t i = 0; i < futures.size(); i++) {
         futures[i].wait();
         if (i % 10 == 0)
@@ -164,6 +165,6 @@ Parser optimizer(const Parser &p, size_t n_classes, size_t n_textfiles, size_t m
             max_seed = seeds[i];
         }
     }
-
+    cout << "Optimizer - finished optimizing for " << n_iterations << " iterations\n";
     return get_lambda(max_seed, n_classes, n_textfiles, p);
 }
