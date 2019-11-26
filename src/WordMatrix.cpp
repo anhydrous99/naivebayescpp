@@ -112,7 +112,7 @@ WordMatrix WordMatrix::block(const std::vector<std::string> &clss, const std::ve
   map<string, size_t> new_class_map;
   map<string, size_t> new_word_map;
 
-  for (int i = 0; i < m; i++)
+  for (size_t i = 0; i < m; i++)
     new_word_map[wrds[i]] = i;
 
   for (size_t i = 0; i < n; i++) {
