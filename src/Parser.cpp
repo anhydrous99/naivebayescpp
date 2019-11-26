@@ -128,38 +128,38 @@ void Parser::prune_per_class(size_t max_per_classes) {
 }
 
 void Parser::prune_per_class(uint_fast32_t random_seed, size_t max_per_classes) {
-    mt19937 gen(random_seed);
+  mt19937 gen(random_seed);
 
-    vector<size_t> indices(items.size());
+  vector<size_t> indices(items.size());
 #ifdef __linux__
-    iota(indices.begin(), indices.end(), 0);
+  iota(indices.begin(), indices.end(), 0);
 #elif __WIN32
-    for (int i = 0; i < indices.size(); i++)
-      indices[i] =i;
+  for (int i = 0; i < indices.size(); i++)
+    indices[i] =i;
 #endif
-    shuffle(indices.begin(), indices.end(), gen);
+  shuffle(indices.begin(), indices.end(), gen);
 
-    map<string, size_t> item_count;
-    vector<NewsItem> new_items;
-    for (const auto &itm : items) {
-        auto itr = item_count.find(itm.collection);
-        if (itr != item_count.end()) {
-            if (itr->second != max_per_classes) {
-                new_items.push_back(itm);
-                itr->second++;
-            }
-        } else {
-            item_count[itm.collection];
-        }
+  map<string, size_t> item_count;
+  vector<NewsItem> new_items;
+  for (const auto &itm : items) {
+    auto itr = item_count.find(itm.collection);
+    if (itr != item_count.end()) {
+      if (itr->second != max_per_classes) {
+        new_items.push_back(itm);
+        itr->second++;
+      }
+    } else {
+      item_count[itm.collection];
     }
-    items = new_items;
+  }
+  items = new_items;
 }
 
 Parser Parser::get_items_of_classes(const std::vector<std::string> &classes) {
   Parser new_parser = *this;
-  for (const auto& itm : items) {
+  for (const auto &itm : items) {
     bool found = false;
-    for (const auto& cls : classes) {
+    for (const auto &cls : classes) {
       if (itm.collection == cls)
         found = true;
     }
@@ -176,7 +176,7 @@ Parser Parser::prune_classes(size_t n) {
   vector<string> clss;
   vector<string> classes = get_classes();
   vector<string> new_classes = sample(classes.begin(), classes.end(), n, g);
-  for (const auto& itm : items) {
+  for (const auto &itm : items) {
     if (find(new_classes.begin(), new_classes.end(), itm.collection) == new_classes.end())
       new_parser.items.erase(remove(new_parser.items.begin(), new_parser.items.end(), itm), new_parser.items.end());
   }

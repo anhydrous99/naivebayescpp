@@ -15,9 +15,9 @@ using namespace std;
 
 WordMatrix::WordMatrix(MatrixXi wc, std::map<std::string, size_t> clss,
                        std::map<std::string, size_t> wrds) :
-                       _word_count(move(wc)),
-                       _classes(move(clss)),
-                       _words(move(wrds)) {
+    _word_count(move(wc)),
+    _classes(move(clss)),
+    _words(move(wrds)) {
 }
 
 WordMatrix::WordMatrix(const std::vector<NewsItem> &items) {
@@ -89,19 +89,19 @@ size_t &WordMatrix::getCount(const std::string &cls, const std::string &word) {
 }
 
 size_t WordMatrix::getCount(const std::vector<std::string> &clss, const std::string &word) {
-  return accumulate(clss.begin(), clss.end(), 0, [&] (size_t a, const string &b) -> size_t {
+  return accumulate(clss.begin(), clss.end(), 0, [&](size_t a, const string &b) -> size_t {
     return a + getCount(b, word);
   });
 }
 
 size_t WordMatrix::getCount(const std::string &cls, const std::vector<std::string> &wrds) {
-  return accumulate(wrds.begin(), wrds.end(), 0, [&] (size_t a, const string &b) -> size_t {
+  return accumulate(wrds.begin(), wrds.end(), 0, [&](size_t a, const string &b) -> size_t {
     return a + getCount(cls, b);
   });
 }
 
 size_t WordMatrix::getCount(const std::vector<std::string> &clss, const std::vector<std::string> &wrds) {
-  return accumulate(clss.begin(), clss.end(), 0, [&] (size_t a, const string &b) -> size_t {
+  return accumulate(clss.begin(), clss.end(), 0, [&](size_t a, const string &b) -> size_t {
     return a + getCount(b, wrds);
   });
 }
@@ -243,7 +243,7 @@ std::string WordMatrix::predict(const NewsItem &itm) {
   // Get class count
   size_t n_classes = _classes.size();
   VectorXd class_count = VectorXd::Zero(n_classes);
-  for (const auto& class_pair : _classes) {
+  for (const auto &class_pair : _classes) {
     class_count[class_pair.second] = static_cast<double>(getClassTotal(class_pair.first));
   }
   //class_count.normalize();
@@ -253,9 +253,9 @@ std::string WordMatrix::predict(const NewsItem &itm) {
   VectorXd class_prob = VectorXd::Zero(n_classes);
   for (const auto &wc_pair : wc) {
     unsigned index = _words[wc_pair.first];
-    for (const auto& cls_pair : _classes) {
+    for (const auto &cls_pair : _classes) {
       double current_wp = pow(_word_probability(cls_pair.second, index), wc_pair.second);
-      double& clsp = class_prob(cls_pair.second);
+      double &clsp = class_prob(cls_pair.second);
       clsp = (clsp == 0) ? class_count[cls_pair.second] * current_wp : clsp * current_wp;
     }
   }
@@ -270,7 +270,7 @@ std::string WordMatrix::predict(const NewsItem &itm) {
       argmax = i;
     }
   }
-  auto found = find_if(_classes.begin(), _classes.end(), [&](const auto& cls_pair) {
+  auto found = find_if(_classes.begin(), _classes.end(), [&](const auto &cls_pair) {
     return cls_pair.second == argmax;
   });
   return found->first;
@@ -278,7 +278,7 @@ std::string WordMatrix::predict(const NewsItem &itm) {
 
 vector<string> WordMatrix::getWords() {
   vector<string> words;
-  transform(_words.begin(), _words.end(), back_inserter(words), [](const auto& word_pair) {
+  transform(_words.begin(), _words.end(), back_inserter(words), [](const auto &word_pair) {
     return word_pair.first;
   });
   return words;
@@ -286,7 +286,7 @@ vector<string> WordMatrix::getWords() {
 
 vector<string> WordMatrix::getClasses() {
   vector<string> classes;
-  transform(_classes.begin(), _classes.end(), back_inserter(classes), [](const auto& cls_pair) {
+  transform(_classes.begin(), _classes.end(), back_inserter(classes), [](const auto &cls_pair) {
     return cls_pair.first;
   });
   return classes;

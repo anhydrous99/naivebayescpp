@@ -14,7 +14,7 @@ typedef high_resolution_clock hrc;
 float test_battery(const vector<NewsItem> &to_test, WordMatrix classifier, const string &test_name) {
   auto t1 = hrc::now();
   size_t correct = 0;
-  for (const NewsItem& itm : to_test) {
+  for (const NewsItem &itm : to_test) {
     string classified = classifier.predict(itm);
     if (itm.collection == classified)
       correct++;
@@ -37,7 +37,7 @@ int main(int argc, char **argv) {
       ("run_second_part", "Run second part's Code")
       ("f,full_path", "Path to full newsgroup dataset", cxxopts::value<string>())
       ("optimizer_iterations", "Number of iterations to run the optimizer",
-              cxxopts::value<size_t>()->default_value("100"))
+       cxxopts::value<size_t>()->default_value("100"))
       ("classify_trained", "Run classifier on data it was trained on");
   auto arg_results = options.parse(argc, argv);
   if (arg_results.arguments().empty() || arg_results.count("help") != 0) {
@@ -61,14 +61,14 @@ int main(int argc, char **argv) {
       hrc::time_point t1, t2;
       Parser mini_newsgroup_parser;
       try {
-          cout << "Parsing\n";
-          t1 = hrc::now();
-          mini_newsgroup_parser = Parser(arg_results["path"].as<string>());
-          t2 = hrc::now();
-          cout << "Parse time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
-      } catch (const runtime_error& e) {
-          cerr << e.what() << endl;
-          return EXIT_FAILURE;
+        cout << "Parsing\n";
+        t1 = hrc::now();
+        mini_newsgroup_parser = Parser(arg_results["path"].as<string>());
+        t2 = hrc::now();
+        cout << "Parse time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
+      } catch (const runtime_error &e) {
+        cerr << e.what() << endl;
+        return EXIT_FAILURE;
       }
 
       cout << "Optimizing\n";
@@ -93,20 +93,20 @@ int main(int argc, char **argv) {
       cout << "Running test batteries\n";
       float test1_accuracy, test2_accuracy, test3_accuracy;
       if (arg_results.count("classify_trained") == 1) {
-          test1_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test1.getClasses()).
-                  get_items(), mat_test1, "5 class, 25 most frequent words, 10 text files per class");
-          test2_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test2.getClasses()).
-                  get_items(), mat_test2, "5 class, 25 most frequent words, 20 text files per class");
-          test3_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test3.getClasses()).
-                  get_items(), mat_test3, "10 class, 50 most frequent words, 10 text files per class");
+        test1_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test1.getClasses()).
+            get_items(), mat_test1, "5 class, 25 most frequent words, 10 text files per class");
+        test2_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test2.getClasses()).
+            get_items(), mat_test2, "5 class, 25 most frequent words, 20 text files per class");
+        test3_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test3.getClasses()).
+            get_items(), mat_test3, "10 class, 50 most frequent words, 10 text files per class");
       } else {
-          Parser new_parser(arg_results["full_path"].as<string>());
-          test1_accuracy = test_battery(new_parser.get_items_of_classes(mat_test1.getClasses()).get_items(),
-                  mat_test1, "5 class, 25 most frequent words, 10 text files per class");
-          test2_accuracy = test_battery(new_parser.get_items_of_classes(mat_test2.getClasses()).get_items(),
-                  mat_test2, "5 class, 25 most frequent words, 20 text files per class");
-          test3_accuracy = test_battery(new_parser.get_items_of_classes(mat_test3.getClasses()).get_items(),
-                  mat_test3, "10 class, 50 most frequent words, 10 text files per class");
+        Parser new_parser(arg_results["full_path"].as<string>());
+        test1_accuracy = test_battery(new_parser.get_items_of_classes(mat_test1.getClasses()).get_items(),
+                                      mat_test1, "5 class, 25 most frequent words, 10 text files per class");
+        test2_accuracy = test_battery(new_parser.get_items_of_classes(mat_test2.getClasses()).get_items(),
+                                      mat_test2, "5 class, 25 most frequent words, 20 text files per class");
+        test3_accuracy = test_battery(new_parser.get_items_of_classes(mat_test3.getClasses()).get_items(),
+                                      mat_test3, "10 class, 50 most frequent words, 10 text files per class");
       }
 
       // Display results
