@@ -13,6 +13,7 @@
 class Parser {
   std::vector<NewsItem> items;
 public:
+    Parser() = default;
 
     /*!
      * Constructs the parser, parses the data into an intermediary format.

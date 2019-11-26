@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cxxopts.hpp>
 #include <chrono>
+#include <stdexcept>
 
 #include "Parser.h"
 #include "utils.h"
@@ -57,11 +58,18 @@ int main(int argc, char **argv) {
       // ******************* RUN OFFLINE TESTS ********************
 
       // 1. The classifier is trained on the mini group benchmarked against the full group
-      cout  << "Parsing\n";
-      auto t1 = hrc::now();
-      Parser mini_newsgroup_parser(arg_results["path"].as<string>());
-      auto t2 = hrc::now();
-      cout << "Parse time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
+      hrc::time_point t1, t2;
+      Parser mini_newsgroup_parser;
+      try {
+          cout << "Parsing\n";
+          t1 = hrc::now();
+          mini_newsgroup_parser = Parser(arg_results["path"].as<string>());
+          t2 = hrc::now();
+          cout << "Parse time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
+      } catch (const runtime_error& e) {
+          cerr << "Error: " << e.what() << endl;
+          return EXIT_FAILURE;
+      }
 
       cout << "Optimizing\n";
       size_t n_iterations = arg_results["optimizer_iterations"].as<size_t>();
