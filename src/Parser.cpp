@@ -9,6 +9,7 @@
 #include <set>
 #include <random>
 #include <fstream>
+#include <numeric>
 #include <algorithm>
 #include <iostream>
 #include <streambuf>
@@ -103,12 +104,7 @@ void Parser::prune_per_class(size_t max_per_classes) {
   mt19937 gen(r());
 
   vector<size_t> indices(items.size());
-#ifdef __linux__
   iota(indices.begin(), indices.end(), 0);
-#elif __WIN32
-  for (int i = 0; i < indices.size(); i++)
-      indices[i] =i;
-#endif
   shuffle(indices.begin(), indices.end(), gen);
 
   map<string, size_t> item_count;
@@ -131,12 +127,7 @@ void Parser::prune_per_class(uint_fast32_t random_seed, size_t max_per_classes) 
   mt19937 gen(random_seed);
 
   vector<size_t> indices(items.size());
-#ifdef __linux__
   iota(indices.begin(), indices.end(), 0);
-#elif __WIN32
-  for (int i = 0; i < indices.size(); i++)
-    indices[i] =i;
-#endif
   shuffle(indices.begin(), indices.end(), gen);
 
   map<string, size_t> item_count;
