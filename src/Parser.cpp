@@ -7,6 +7,7 @@
 #include "filesystem.h"
 #include <regex>
 #include <set>
+#include <unordered_set>
 #include <random>
 #include <fstream>
 #include <numeric>
@@ -38,11 +39,10 @@ Parser::Parser(const string &path) {
 
   // Get stop words into a vector
   ifstream stop_words_stream("stop_words.txt");
-  vector<string> stop_words;
+  unordered_set<string> stop_words;
   string line;
   while (getline(stop_words_stream, line))
-    stop_words.push_back(line);
-  sort(stop_words.begin(), stop_words.end());
+    stop_words.insert(line);
 
   // Recursively iterate through the directory looking for files
   fs::recursive_directory_iterator it{path};
@@ -68,7 +68,7 @@ Parser::Parser(const string &path) {
       while (regit != end) {
         string word = (*regit++).str();
         // If word is a stop word ignore
-        if (binary_search(stop_words.begin(), stop_words.end(), word))
+        if (stop_words.find(word) != stop_words.end())
           continue;
         // Add to map of words
         auto map_itr = itm.word_count.find(word);
