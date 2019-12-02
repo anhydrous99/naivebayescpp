@@ -118,7 +118,7 @@ Parser optimizer(const Parser &p, size_t n_classes, size_t n_textfiles, size_t m
   random_device rd;
   mt19937 gen(rd());
 
-  // Create function that will on a per task basis
+  // Create lambda function that will test accuracy
   auto test_lambda = [](uint_fast32_t random_seed, size_t n_clss, size_t n_tf, size_t mf, Parser p) {
     mt19937 gen(random_seed);
     vector<string> classes = p.get_classes();
@@ -135,6 +135,7 @@ Parser optimizer(const Parser &p, size_t n_classes, size_t n_textfiles, size_t m
     return static_cast<float>(correct) / static_cast<float>(items.size());
   };
 
+  // Create lambda function that recreates steps from a seed
   auto get_lambda = [](uint_fast32_t random_seed, size_t n_clss, size_t n_tf, Parser p) {
     mt19937 gen(random_seed);
     vector<string> cls = p.get_classes();
@@ -143,28 +144,29 @@ Parser optimizer(const Parser &p, size_t n_classes, size_t n_textfiles, size_t m
     p.prune_per_class(gen(), n_tf);
     return p;
   };
+
   cout << "Optimizer - queuing tasks...\n";
-  vector<future<float>> futures;
-  vector<uint_fast32_t> seeds;
+  vector<future<float>> futures; // Stores futures -- for asynchronous execution
+  vector<uint_fast32_t> seeds; // Stores random seeds
   for (size_t i = 0; i < n_iterations; i++) {
     uint_fast32_t seed = gen();
     seeds.push_back(seed);
     futures.push_back(async(launch::async, test_lambda, seed, n_classes, n_textfiles, most_frequent, p));
   }
 
-  float mx = 0;
-  uint_fast32_t max_seed = 0;
+  float mx = 0; // Best accuracy
+  uint_fast32_t max_seed = 0; // Seed of best accuracy
   cout << "Optimizer - queued all tasks.. waiting for all queued tasks to finish...\n";
   for (size_t i = 0; i < futures.size(); i++) {
-    futures[i].wait();
+    futures[i].wait(); // Wait for thread to finish
     if (i % 10 == 0)
       cout << "Optimizer - iteration : " << i << " - done\n";
-    float current = futures[i].get();
-    if (current > mx) {
+    float current = futures[i].get(); // Get threads output
+    if (current > mx) { // Check for maximum accuracy
       mx = current;
       max_seed = seeds[i];
     }
   }
   cout << "Optimizer - finished optimizing for " << n_iterations << " iterations\n";
-  return get_lambda(max_seed, n_classes, n_textfiles, p);
+  return get_lambda(max_seed, n_classes, n_textfiles, p); // Recreate best accuracy parser
 }
