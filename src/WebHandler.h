@@ -13,47 +13,51 @@
 
 //! Uses the libcurl library to interface with newsapi.org to obtain the leading news
 class WebHandler {
-  std::string url = "https://newsapi.org/v2/top-headlines?";
-  std::unordered_set<std::string> _stop_words;
-  bool _stop_words_init = false;
-  std::string _key;
-
-  std::string Call(const std::string &uri);
-  std::string Call(const std::map<std::string, std::string> &args);
-  void getStopWords();
+    std::string url = "https://newsapi.org/v2/top-headlines?";
+    std::unordered_set<std::string> _stop_words;
+    bool _stop_words_init = false;
+    std::string _key;
+    std::string Call(const std::string &uri);
+    std::string Call(const std::map<std::string, std::string> &args);
+    void getStopWords();
 
 public:
-  /*!
-   * Constructs the WebHandler class
-   * @param key The api key for the newsapi.org site
-   */
-  explicit WebHandler(std::string key);
+    /*!
+     * Default constructor, gets a json config file with key
+     */
+    WebHandler();
 
-  /*!
-   * Sends query to newsapi for the top 20 of class collection
-   * @param collection The class
-   * @return A vector of NewsItem objects all of class collection
-   */
-  std::vector<NewsItem> sendQuery(const std::string &collection);
+    /*!
+     * Constructs the WebHandler class
+     * @param key The api key for the newsapi.org site
+     */
+    explicit WebHandler(std::string key);
 
-  /*!
-   * Send queries to newsapi for the top 20 per class in vector of classes collection
-   * @param collections The classes
-   * @return A vector of NewsItem objects
-   */
-  std::vector<NewsItem> sendQueries(const std::vector<std::string> &collections);
+    /*!
+     * Sends query to newsapi for the top 20 of class collection
+     * @param collection The class
+     * @return A vector of NewsItem objects all of class collection
+     */
+    std::vector<NewsItem> sendQuery(const std::string &collection);
 
-  /*!
-   * Set the newapi.org api key
-   * @param key newsapi key
-   */
-  void setKey(const std::string &key);
+    /*!
+     * Send queries to newsapi for the top 20 per class in vector of classes collection
+     * @param collections The classes
+     * @return A vector of NewsItem objects
+     */
+    std::vector<NewsItem> sendQueries(const std::vector<std::string> &collections);
 
-  /*!
-   * Gets the newsapi.org api key
-   * @return The news api key
-   */
-  std::string getKey();
+    /*!
+     * Set the newapi.org api key
+     * @param key newsapi key
+     */
+    void setKey(const std::string &key);
+
+    /*!
+     * Gets the newsapi.org api key
+     * @return The news api key
+     */
+    std::string getKey();
 };
 
 #endif //NAIVEBAYESCPP_WEBHANDLER_H

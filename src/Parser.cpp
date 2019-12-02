@@ -19,7 +19,9 @@
 
 using namespace std;
 
-static string read_file(const fs::path &p) {
+static string read_file(const fs::path &p);
+
+string read_file(const fs::path &p) {
   ifstream t(p.string());
   string str;
 

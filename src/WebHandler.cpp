@@ -120,6 +120,17 @@ std::vector<NewsItem> WebHandler::sendQueries(const vector<string> & collections
 
 WebHandler::WebHandler(std::string key) : _key(std::move(key)) {}
 
+WebHandler::WebHandler() {
+    ifstream t("webconfig.json");
+    if (!t.is_open())
+        throw runtime_error("Error: couldn't find webconfig.json in binary path.\n");
+    string str((istreambuf_iterator<char>(t)), istreambuf_iterator<char>());
+    auto json_parser = json::parse(str);
+    if (json_parser.count("key") != 1)
+        throw runtime_error("Error: key not in json file.\n");
+    _key = json_parser["key"].get<string>();
+}
+
 void WebHandler::setKey(const std::string &key) { _key = key; }
 
 string WebHandler::getKey() { return _key; }
