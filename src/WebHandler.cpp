@@ -86,7 +86,27 @@ vector<NewsItem> WebHandler::sendQuery(const string &collection) {
     for (const auto &element : arr) {
         NewsItem itm;
         itm.collection = collection;
+        itm.path = element["url"].get<string>();
+        itm.contents = element["title"].get<string>();
+        itm.contents += element["description"].get<string>();
+        itm.contents += element["content"].get<string>();
+
+        // Count words
+        auto regit = sregex_iterator(itm.contents.begin(), itm.contents.end(), expr);
+        auto end = sregex_iterator();
+        while (regit != end) {
+            auto word = (*regit++).str();
+            if (find(_stop_words.begin(), _stop_words.end(), word) != _stop_words.end())
+                continue;
+            auto map_itr = itm.word_count.find(word);
+            if (map_itr == itm.word_count.end())
+                itm.word_count[word] = 1;
+            else
+                map_itr->second++;
+        }
+        output.push_back(itm);
     }
+    return output;
 }
 
 WebHandler::WebHandler(std::string key) : _key(std::move(key)) {}
