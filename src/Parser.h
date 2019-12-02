@@ -65,6 +65,11 @@ public:
    * @return A WordMatrix with n classes
    */
   Parser prune_classes(size_t n);
+
+  /*!
+   * Randomly shuffles NewsItems
+   */
+  void shuffle();
 };
 
 #endif //NAIVEBAYESCPP_PARSER_H

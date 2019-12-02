@@ -20,7 +20,7 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
 }
 
 string WebHandler::Call(const std::string &uri) {
-  string key = "&apikey=" + apikey;
+  string key = "&apikey=" + _key;
   CURL *curl;
   CURLcode res;
   string readBuffer;
@@ -55,61 +55,42 @@ string WebHandler::Call(const std::map<std::string, std::string> &args) {
   return Call(uri);
 }
 
-WebHandler::WebHandler(std::string key) : apikey(std::move(key)) {}
+void WebHandler::getStopWords() {
+    if (!_stop_words_init) {
+        if (!fs::exists("stop_words.txt") || fs::is_directory("stopwords.txt"))
+            throw runtime_error("Error: stop_words.txt is not at the binary directory.\n");
+        ifstream stop_words_stream("stop_words.txt");
+        string line;
+        while (getline(stop_words_stream, line))
+            _stop_words.insert(line);
+        _stop_words_init = true;
+    }
+}
 
-std::vector<NewsItem> WebHandler::getTop(size_t n) {
-  if (!fs::exists("stop_words.txt") || fs::is_directory("stop_words.txt"))
-    throw std::runtime_error("Error: stop_words.txt is not at the binary directory.\n");
-  vector<NewsItem> items;
-
-  // Get stop words into a vector
-  ifstream stop_words_stream("stop_words.txt");
-  vector<string> stop_words;
-  string line;
-  while (getline(stop_words_stream, line))
-    stop_words.push_back(line);
-
-  regex expr("([^\\W_0123456789])+");
-  const size_t max_per_call = 100;
-  for (size_t i = 0, j = 0; i < n; i += max_per_call, j++) {
-    string contents;
-    size_t rm = n - (i * max_per_call);
+vector<NewsItem> WebHandler::sendQuery(const string &collection) {
+    getStopWords();
+    vector<NewsItem> output;
     map<string, string> args;
     args["country"] = "us";
-    args["pageSize"] = to_string(min(rm, max_per_call));
-    args["page"] = to_string(j);
-    contents = Call(args);
-    auto json_parse = json::parse(contents);
-    if (!json_parse.contains("status"))
-      throw runtime_error("Error: could parser json or could access internet");
-    if (json_parse["status"].get<string>() == "error")
-      throw runtime_error(json_parse["code"].get<string>() + json_parse["message"].get<string>());
-    auto arr = json_parse["articles"];
-    for (const auto &element :  arr) {
-      NewsItem itm;
-      itm.collection = "unknown";
-      itm.path = element["url"].get<string>();
-      itm.contents = element["content"].get<string>();
-      itm.contents += " " + element["description"].get<string>();
-      itm.contents += " " + element["title"].get<string>();
+    args["pageSize"] = "20";
+    args["q"] = collection.substr(collection.rfind('.'));
 
-      // Count words
-      auto regit = sregex_iterator(itm.contents.begin(), itm.contents.end(), expr);
-      auto end = sregex_iterator();
-      while (regit != end) {
-        auto word = (*regit++).str();
-        // If word is a stop word ignore
-        if (std::find(stop_words.begin(), stop_words.end(), word) != stop_words.end())
-          continue;
-        // Add to map of words
-        auto map_itr = itm.word_count.find(word);
-        if (map_itr == itm.word_count.end())
-          itm.word_count[word] = 1;
-        else
-          map_itr->second++;
-      }
-      items.push_back(itm);
+    regex expr("([^\\W_0123456789])+");
+    string contents = Call(args);
+    auto json_parser = json::parse(contents);
+    if (!json_parser.contains("status"))
+        throw runtime_error("Error: could not parse json or could not access internet");
+    if (json_parser["status"].get<string>() == "error")
+        throw runtime_error(json_parser["code"].get<string>() + json_parser["message"].get<string>());
+    auto arr = json_parser["articles"];
+    for (const auto &element : arr) {
+        NewsItem itm;
+        itm.collection = collection;
     }
-  }
-  return items;
 }
+
+WebHandler::WebHandler(std::string key) : _key(std::move(key)) {}
+
+void WebHandler::setKey(const std::string &key) { _key = key; }
+
+string WebHandler::getKey() { return _key; }

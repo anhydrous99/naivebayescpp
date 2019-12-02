@@ -101,47 +101,20 @@ vector<NewsItem> Parser::get_items() {
 
 void Parser::prune_per_class(size_t max_per_classes) {
   random_device r;
-  mt19937 gen(r());
-
-  vector<size_t> indices(items.size());
-  iota(indices.begin(), indices.end(), 0);
-  shuffle(indices.begin(), indices.end(), gen);
-
-  map<string, size_t> item_count;
-  vector<NewsItem> new_items;
-  for (const auto &itm : items) {
-    auto itr = item_count.find(itm.collection);
-    if (itr != item_count.end()) {
-      if (itr->second != max_per_classes) {
-        new_items.push_back(itm);
-        itr->second++;
-      }
-    } else {
-      item_count[itm.collection];
-    }
-  }
-  items = new_items;
+  prune_per_class(r(), max_per_classes);
 }
 
 void Parser::prune_per_class(uint_fast32_t random_seed, size_t max_per_classes) {
   mt19937 gen(random_seed);
-
-  vector<size_t> indices(items.size());
-  iota(indices.begin(), indices.end(), 0);
-  shuffle(indices.begin(), indices.end(), gen);
-
-  map<string, size_t> item_count;
+  vector<string> classes = get_classes();
   vector<NewsItem> new_items;
-  for (const auto &itm : items) {
-    auto itr = item_count.find(itm.collection);
-    if (itr != item_count.end()) {
-      if (itr->second != max_per_classes) {
-        new_items.push_back(itm);
-        itr->second++;
-      }
-    } else {
-      item_count[itm.collection];
-    }
+  for (const string& cls : classes) {
+      vector<NewsItem> tmp_itms;
+      copy_if(items.begin(), items.end(), back_inserter(tmp_itms), [&](const NewsItem &itm) {
+         return itm.collection == cls;
+      });
+      tmp_itms = sample(tmp_itms.begin(), tmp_itms.end(), max_per_classes, gen);
+      new_items.insert(new_items.end(), tmp_itms.begin(), tmp_itms.end());
   }
   items = new_items;
 }
@@ -164,7 +137,6 @@ Parser Parser::prune_classes(size_t n) {
   Parser new_parser = *this;
   random_device rd;
   mt19937 g(rd());
-  vector<string> clss;
   vector<string> classes = get_classes();
   vector<string> new_classes = sample(classes.begin(), classes.end(), n, g);
   for (const auto &itm : items) {
@@ -172,4 +144,10 @@ Parser Parser::prune_classes(size_t n) {
       new_parser.items.erase(remove(new_parser.items.begin(), new_parser.items.end(), itm), new_parser.items.end());
   }
   return new_parser;
+}
+
+void Parser::shuffle() {
+    random_device rd;
+    mt19937 g(rd());
+    std::shuffle(items.begin(), items.end(), g);
 }

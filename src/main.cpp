@@ -34,7 +34,8 @@ int main(int argc, char **argv) {
       ("run_first_part", "Run first part's Code")
       ("test_latex", "Print latex when testing");
   options.add_options("part_2")
-      ("run_second_part", "Run second part's Code")
+      ("run_second_part", "Run second part's code")
+      ("run_online", "Run online part's code")
       ("f,full_path", "Path to full newsgroup dataset", cxxopts::value<string>())
       ("optimizer_iterations", "Number of iterations to run the optimizer",
        cxxopts::value<size_t>()->default_value("100"))
@@ -64,6 +65,7 @@ int main(int argc, char **argv) {
         cout << "Parsing\n";
         t1 = hrc::now();
         mini_newsgroup_parser = Parser(arg_results["path"].as<string>());
+        mini_newsgroup_parser.shuffle();
         t2 = hrc::now();
         cout << "Parse time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
       } catch (const runtime_error &e) {
@@ -113,11 +115,14 @@ int main(int argc, char **argv) {
       cout << " Test 1 - accuracy " << test1_accuracy << endl;
       cout << " Test 2 - accuracy " << test2_accuracy << endl;
       cout << " Test 3 - accuracy " << test3_accuracy << endl;
-    } else {
+    } else if (arg_results.count("run_online")) {
       // TODO: run online benchmarks
       // 1. Create re-classifier to reclassify according to online classifications
       // 2. Train on re-classified mini-newsgroup data and inference online data
       // 3. Train on online data and benchmark the mini and full newsgroup items
+    } else {
+        cout << options.help();
+        return EXIT_FAILURE;
     }
   }
 
