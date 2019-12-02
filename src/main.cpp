@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
         cout << "Word matrix creation time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
 
         // Query newsapi for the test case gets 20 items per class
-        WebHandler handler("enter key here");
+        WebHandler handler;
 
         // Get items per test
         auto web_items_test1 = handler.sendQueries(mat_test1.getClasses());
@@ -167,6 +167,7 @@ int main(int argc, char **argv) {
                                                                         "25 most frequent");
         float test3_accuracy = test_battery(web_items_test3, mat_test3, "200 web items, 10 classes, 10 text files, "
                                                                         "50 most frequent");
+
         cout << " Test 1 - accuracy " << test1_accuracy << endl;
         cout << " Test 2 - accuracy " << test2_accuracy << endl;
         cout << " Test 3 - accuracy " << test3_accuracy << endl;

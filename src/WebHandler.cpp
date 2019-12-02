@@ -71,9 +71,8 @@ vector<NewsItem> WebHandler::sendQuery(const string &collection) {
     getStopWords();
     vector<NewsItem> output;
     map<string, string> args;
-    args["country"] = "us";
-    args["pageSize"] = "20";
-    args["q"] = collection.substr(collection.rfind('.'));
+    args["pageSize"] = "40";
+    args["q"] = collection.substr(collection.rfind('.') + 1);
 
     regex expr("([^\\W_0123456789])+");
     string contents = Call(args);
@@ -86,10 +85,10 @@ vector<NewsItem> WebHandler::sendQuery(const string &collection) {
     for (const auto &element : arr) {
         NewsItem itm;
         itm.collection = collection;
-        itm.path = element["url"].get<string>();
-        itm.contents = element["title"].get<string>();
-        itm.contents += element["description"].get<string>();
-        itm.contents += element["content"].get<string>();
+        itm.path = (element["url"] != nullptr) ? " " + element["url"].get<string>() : " ";
+        itm.contents = (element["title"] != nullptr) ? " " + element["title"].get<string>() : " ";
+        itm.contents += (element["description"] != nullptr) ? " " + element["description"].get<string>() : " ";
+        itm.contents += (element["content"] != nullptr) ? " " + element["content"].get<string>() : " ";
 
         // Count words
         auto regit = sregex_iterator(itm.contents.begin(), itm.contents.end(), expr);

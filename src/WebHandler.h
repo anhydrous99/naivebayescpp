@@ -13,7 +13,7 @@
 
 //! Uses the libcurl library to interface with newsapi.org to obtain the leading news
 class WebHandler {
-    std::string url = "https://newsapi.org/v2/top-headlines?";
+    std::string url = "https://newsapi.org/v2/everything?";
     std::unordered_set<std::string> _stop_words;
     bool _stop_words_init = false;
     std::string _key;
