@@ -2,7 +2,9 @@
 #include <cxxopts.hpp>
 #include <chrono>
 #include <stdexcept>
+#include <vector>
 
+#include "WebHandler.h"
 #include "Parser.h"
 #include "utils.h"
 
@@ -116,6 +118,58 @@ int main(int argc, char **argv) {
         // 1. Create re-classifier to reclassify according to online classifications
         // 2. Train on re-classified mini-newsgroup data and inference online data
         // 3. Train on online data and benchmark the mini and full newsgroup items
+
+        // 1. The classifier is trained on the mini group benchmarked against the full group
+        hrc::time_point t1, t2;
+        Parser mini_newsgroup_parser;
+        try {
+            cout << "Parsing\n";
+            t1 = hrc::now();
+            mini_newsgroup_parser = Parser(arg_results["path"].as<string>());
+            mini_newsgroup_parser.shuffle();
+            t2 = hrc::now();
+            cout << "Parse time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
+        } catch (const runtime_error &e) {
+            cerr << e.what() << endl;
+            return EXIT_FAILURE;
+        }
+
+        cout << "Optimizing\n";
+        size_t n_iterations = arg_results["optimizer_iterations"].as<size_t>();
+        t1 = hrc::now();
+        Parser parsed_test1 = optimizer(mini_newsgroup_parser, 5, 10, 25, n_iterations);
+        Parser parsed_test2 = optimizer(mini_newsgroup_parser, 5, 20, 25, n_iterations);
+        Parser parsed_test3 = optimizer(mini_newsgroup_parser, 10, 10, 50, n_iterations);
+        t2 = hrc::now();
+        cout << "Optimization time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
+
+        // Create word matrices
+        cout << "Create word matrices\n";
+        t1 = hrc::now();
+        WordMatrix mat_test1 = parsed_test1.getMatrix().getMostFrequent(25);
+        WordMatrix mat_test2 = parsed_test2.getMatrix().getMostFrequent(25);
+        WordMatrix mat_test3 = parsed_test3.getMatrix().getMostFrequent(50);
+        t2 = hrc::now();
+        cout << "Word matrix creation time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
+
+        // Query newsapi for the test case gets 20 items per class
+        WebHandler handler("enter key here");
+
+        // Get items per test
+        auto web_items_test1 = handler.sendQueries(mat_test1.getClasses());
+        auto web_items_test2 = handler.sendQueries(mat_test2.getClasses());
+        auto web_items_test3 = handler.sendQueries(mat_test3.getClasses());
+
+        // Run tests
+        float test1_accuracy = test_battery(web_items_test1, mat_test1, "100 web items, 5 classes, 10 text files, "
+                                                                        "25 most frequent");
+        float test2_accuracy = test_battery(web_items_test2, mat_test2, "100 web items, 5 classes, 20 text files, "
+                                                                        "25 most frequent");
+        float test3_accuracy = test_battery(web_items_test3, mat_test3, "200 web items, 10 classes, 10 text files, "
+                                                                        "50 most frequent");
+        cout << " Test 1 - accuracy " << test1_accuracy << endl;
+        cout << " Test 2 - accuracy " << test2_accuracy << endl;
+        cout << " Test 3 - accuracy " << test3_accuracy << endl;
     } else {
         cout << options.help();
         return EXIT_FAILURE;

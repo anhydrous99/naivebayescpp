@@ -109,6 +109,15 @@ vector<NewsItem> WebHandler::sendQuery(const string &collection) {
     return output;
 }
 
+std::vector<NewsItem> WebHandler::sendQueries(const vector<string> & collections) {
+    vector<NewsItem> output;
+    for (const string &cls : collections) {
+        vector<NewsItem> tmp = sendQuery(cls);
+        output.insert(output.end(), tmp.begin(), tmp.end());
+    }
+    return output;
+}
+
 WebHandler::WebHandler(std::string key) : _key(std::move(key)) {}
 
 void WebHandler::setKey(const std::string &key) { _key = key; }

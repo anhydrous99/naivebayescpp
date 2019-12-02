@@ -22,6 +22,12 @@ public:
   explicit Parser(const std::string &path);
 
   /*!
+   * Creates a parser from already parsed items
+   * @param itms The items
+   */
+  explicit Parser(std::vector<NewsItem> itms);
+
+  /*!
    * Returns the data in a word matrix, useful for analysis and classification
    * @return A WordMatrix object
    */

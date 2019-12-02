@@ -29,7 +29,19 @@ public:
    */
   explicit WebHandler(std::string key);
 
+  /*!
+   * Sends query to newsapi for the top 20 of class collection
+   * @param collection The class
+   * @return A vector of NewsItem objects all of class collection
+   */
   std::vector<NewsItem> sendQuery(const std::string &collection);
+
+  /*!
+   * Send queries to newsapi for the top 20 per class in vector of classes collection
+   * @param collections The classes
+   * @return A vector of NewsItem objects
+   */
+  std::vector<NewsItem> sendQueries(const std::vector<std::string> &collections);
 
   /*!
    * Set the newapi.org api key

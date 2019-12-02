@@ -15,6 +15,7 @@
 #include <iostream>
 #include <streambuf>
 #include <stdexcept>
+#include <utility>
 
 using namespace std;
 
@@ -81,6 +82,8 @@ Parser::Parser(const string &path) {
     }
   }
 }
+
+Parser::Parser(std::vector<NewsItem> itms) : items(std::move(itms)) {}
 
 WordMatrix Parser::getMatrix() {
   return WordMatrix(items);
