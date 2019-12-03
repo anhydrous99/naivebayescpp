@@ -124,6 +124,22 @@ void Parser::prune_per_class(uint_fast32_t random_seed, size_t max_per_classes) 
   items = new_items;
 }
 
+void Parser::prune_per_class(std::map<std::string, size_t> class_count) {
+  random_device r;
+  mt19937 gen(r());
+  vector<string> classes = get_classes();
+  vector<NewsItem> new_items;
+  for (const auto& cls_pair : class_count) {
+    vector<NewsItem> tmp_itms;
+    copy_if(items.begin(), items.end(), back_inserter(tmp_itms), [&](const NewsItem &itm) {
+      return itm.collection == cls_pair.first;
+    });
+    tmp_itms = sample(tmp_itms.begin(), tmp_itms.end(), cls_pair.second, gen);
+    new_items.insert(new_items.end(), tmp_itms.begin(), tmp_itms.end());
+  }
+  items = new_items;
+}
+
 Parser Parser::get_items_of_classes(const std::vector<std::string> &classes) {
   Parser new_parser = *this;
   for (const auto &itm : items) {

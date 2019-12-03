@@ -59,6 +59,12 @@ public:
   void prune_per_class(uint_fast32_t random_seed, size_t max_per_classes);
 
   /*!
+   * Removes the number of items per class
+   * @param class_count A map where the key is the class and the value is the number of items in that class to keep
+   */
+  void prune_per_class(std::map<std::string, size_t> class_count);
+
+  /*!
    * This function returns a Parser object with only those items of classes provided
    * @param classes The classes as a vector of strings
    * @return The resulting Parser with only the classes provided
