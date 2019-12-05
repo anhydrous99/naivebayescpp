@@ -62,7 +62,14 @@ public:
    * Removes the number of items per class
    * @param class_count A map where the key is the class and the value is the number of items in that class to keep
    */
-  void prune_per_class(std::map<std::string, size_t> class_count);
+  void prune_per_class(const std::map<std::string, size_t> &class_count);
+
+  /*!
+   * Removes a number of items per class
+   * @param random_seed The random seed
+   * @param class_count A map where the key is the class and the value is the number of items in that class to keep
+   */
+  void prune_per_class(uint_fast32_t random_seed, const std::map<std::string, size_t> &class_count);
 
   /*!
    * This function returns a Parser object with only those items of classes provided

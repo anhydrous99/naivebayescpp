@@ -170,3 +170,54 @@ Parser optimizer(const Parser &p, size_t n_classes, size_t n_textfiles, size_t m
   cout << "Optimizer - finished optimizing for " << n_iterations << " iterations\n";
   return get_lambda(max_seed, n_classes, n_textfiles, p); // Recreate best accuracy parser
 }
+
+Parser optimizer(const Parser &p, size_t most_frequent, size_t n_interations,
+                 const std::map<std::string, size_t> &class_count) {
+  random_device rd;
+  mt19937 gen(rd());
+
+  // Create lambda function that will test accuracy
+  auto test_lambda = [](uint_fast32_t rs, size_t mf, Parser p, const map<string, size_t> &cc) {
+    mt19937 gen(rs);
+    vector<NewsItem> items = p.get_items();
+    p.prune_per_class(gen(), cc);
+    WordMatrix mat = p.getMatrix().getMostFrequent(mf);
+    size_t correct = 0;
+    for (const NewsItem &itm : items) {
+      if (itm.collection == mat.predict(itm))
+        correct++;
+    }
+    return static_cast<float>(correct) / static_cast<float>(items.size());
+  };
+
+  auto get_lambda = [](uint_fast32_t rs, size_t mf, Parser p, const map<string, size_t> &cc) {
+    mt19937 gen(rs);
+    p.prune_per_class(gen(), cc);
+    return p;
+  };
+
+  cout << "Optimizer - queuing tasks...\n";
+  vector<future<float>> futures;
+  vector<uint_fast32_t> seeds;
+  for (size_t i = 0; i < n_interations; i++) {
+    uint_fast32_t seed = gen();
+    seeds.push_back(seed);
+    futures.push_back(async(launch::async, test_lambda, seed, most_frequent, p, class_count));
+  }
+
+  float mx = 0; // best accuracy
+  uint_fast32_t max_seed = 0;
+  cout << "Optimizer - queued all tasks.. waiting for all queued tasks to finish...\n";
+  for (size_t i = 0; i < futures.size(); i++) {
+    futures[i].wait();
+    if (i % 10 == 0)
+      cout << "Optimizer - iteration : " << i << " - done\n";
+    float current = futures[i].get();
+    if (current > mx) {
+      mx = current;
+      max_seed = seeds[i];
+    }
+  }
+  cout << "Optimizer - finished optimizing for " << n_interations << " iterations\n";
+  return get_lambda(max_seed, most_frequent, p, class_count);
+}

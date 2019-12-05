@@ -68,4 +68,15 @@ sample(Itr first, Itr last, typename std::iterator_traits<Itr>::difference_type 
  */
 Parser optimizer(const Parser &p, size_t n_classes, size_t n_textfiles, size_t most_frequent, size_t n_iterations);
 
+/*!
+ * Uses a multi-threaded monte-carlo search to find the best classes and text files
+ * @param p The parser
+ * @param most_frequent The number of most frequent words to clacualte while testing
+ * @param n_interations The number of iterations to run the search for
+ * @param class_count The count per class, in a map of string keys and size_t values for the count
+ * @return The parser with the best results from the search
+ */
+Parser optimizer(const Parser &p, size_t most_frequent, size_t n_interations,
+    const std::map<std::string, size_t> &class_count);
+
 #endif //NAIVEBAYESCPP_UTILS_H
