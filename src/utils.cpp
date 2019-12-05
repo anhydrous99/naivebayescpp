@@ -190,7 +190,7 @@ Parser optimizer(const Parser &p, size_t most_frequent, size_t n_interations,
     return static_cast<float>(correct) / static_cast<float>(items.size());
   };
 
-  auto get_lambda = [](uint_fast32_t rs, size_t mf, Parser p, const map<string, size_t> &cc) {
+  auto get_lambda = [](uint_fast32_t rs, Parser p, const map<string, size_t> &cc) {
     mt19937 gen(rs);
     p.prune_per_class(gen(), cc);
     return p;
@@ -219,5 +219,5 @@ Parser optimizer(const Parser &p, size_t most_frequent, size_t n_interations,
     }
   }
   cout << "Optimizer - finished optimizing for " << n_interations << " iterations\n";
-  return get_lambda(max_seed, most_frequent, p, class_count);
+  return get_lambda(max_seed, p, class_count);
 }
