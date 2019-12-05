@@ -3,6 +3,7 @@
 #include <chrono>
 #include <stdexcept>
 #include <vector>
+#include <random>
 
 #include "WebHandler.h"
 #include "Parser.h"
@@ -71,12 +72,48 @@ int main(int argc, char **argv) {
       return EXIT_FAILURE;
     }
 
+    random_device r;
+    mt19937 gen(r());
+    vector<string> clss = mini_newsgroup_parser.get_classes();
+    vector<string> test4_classes = sample(clss.begin(), clss.end(), 5, gen);
+    vector<string> test5_classes = sample(clss.begin(), clss.end(), 5, gen);
+    vector<string> test6_classes = sample(clss.begin(), clss.end(), 10, gen);
+
+    map<string, size_t> test4_class_count;
+    test4_class_count[test4_classes[0]] = 5;
+    test4_class_count[test4_classes[1]] = 5;
+    test4_class_count[test4_classes[2]] = 20;
+    test4_class_count[test4_classes[3]] = 20;
+    test4_class_count[test4_classes[4]] = 50;
+
+    map<string, size_t> test5_class_count;
+    test5_class_count[test5_classes[0]] = 5;
+    test5_class_count[test5_classes[1]] = 5;
+    test5_class_count[test5_classes[2]] = 20;
+    test5_class_count[test5_classes[3]] = 20;
+    test5_class_count[test5_classes[4]] = 50;
+
+    map<string, size_t> test6_class_count;
+    test6_class_count[test6_classes[0]] = 5;
+    test6_class_count[test6_classes[1]] = 5;
+    test6_class_count[test6_classes[2]] = 5;
+    test6_class_count[test6_classes[3]] = 5;
+    test6_class_count[test6_classes[4]] = 5;
+    test6_class_count[test6_classes[5]] = 5;
+    test6_class_count[test6_classes[6]] = 15;
+    test6_class_count[test6_classes[7]] = 15;
+    test6_class_count[test6_classes[8]] = 15;
+    test6_class_count[test6_classes[9]] = 25;
+
     cout << "Optimizing\n";
     size_t n_iterations = arg_results["optimizer_iterations"].as<size_t>();
     t1 = hrc::now();
     Parser parsed_test1 = optimizer(mini_newsgroup_parser, 5, 10, 25, n_iterations);
     Parser parsed_test2 = optimizer(mini_newsgroup_parser, 5, 20, 25, n_iterations);
     Parser parsed_test3 = optimizer(mini_newsgroup_parser, 10, 10, 50, n_iterations);
+    Parser parsed_test4 = optimizer(mini_newsgroup_parser, 25, n_iterations, test4_class_count);
+    Parser parsed_test5 = optimizer(mini_newsgroup_parser, 25, n_iterations, test5_class_count);
+    Parser parsed_test6 = optimizer(mini_newsgroup_parser, 50, n_iterations, test6_class_count);
     t2 = hrc::now();
     cout << "Optimization time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
 
@@ -86,12 +123,15 @@ int main(int argc, char **argv) {
     WordMatrix mat_test1 = parsed_test1.getMatrix().getMostFrequent(25);
     WordMatrix mat_test2 = parsed_test2.getMatrix().getMostFrequent(25);
     WordMatrix mat_test3 = parsed_test3.getMatrix().getMostFrequent(50);
+    WordMatrix mat_test4 = parsed_test4.getMatrix().getMostFrequent(25);
+    WordMatrix mat_test5 = parsed_test5.getMatrix().getMostFrequent(25);
+    WordMatrix mat_test6 = parsed_test6.getMatrix().getMostFrequent(50);
     t2 = hrc::now();
     cout << "Word matrix creation time: " << duration_cast<milliseconds>(t2 - t1).count() << " ms\n";
 
     // Run tests
     cout << "Running test batteries\n";
-    float test1_accuracy, test2_accuracy, test3_accuracy;
+    float test1_accuracy, test2_accuracy, test3_accuracy, test4_accuracy, test5_accuracy, test6_accuracy;
     if (arg_results.count("full_path") == 0) {
       test1_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test1.getClasses()).
           get_items(), mat_test1, "5 class, 25 most frequent words, 10 text files per class");
@@ -99,6 +139,12 @@ int main(int argc, char **argv) {
           get_items(), mat_test2, "5 class, 25 most frequent words, 20 text files per class");
       test3_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test3.getClasses()).
           get_items(), mat_test3, "10 class, 50 most frequent words, 10 text files per class");
+      test4_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test4.getClasses()).get_items(),
+          mat_test4, "5 class, 25 most frequent words");
+      test5_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test5.getClasses()).get_items(),
+          mat_test5, "5 class, 25 most frequent words");
+      test6_accuracy = test_battery(mini_newsgroup_parser.get_items_of_classes(mat_test6.getClasses()).get_items(),
+          mat_test6, "10 class, 50 most frequent words");
     } else {
       Parser new_parser(arg_results["full_path"].as<string>());
       test1_accuracy = test_battery(new_parser.get_items_of_classes(mat_test1.getClasses()).get_items(),
@@ -107,12 +153,21 @@ int main(int argc, char **argv) {
                                     mat_test2, "5 class, 25 most frequent words, 20 text files per class");
       test3_accuracy = test_battery(new_parser.get_items_of_classes(mat_test3.getClasses()).get_items(),
                                     mat_test3, "10 class, 50 most frequent words, 10 text files per class");
+      test4_accuracy = test_battery(new_parser.get_items_of_classes(mat_test4.getClasses()).get_items(),
+                                    mat_test4, "5 class, 25 most frequent words");
+      test5_accuracy = test_battery(new_parser.get_items_of_classes(mat_test5.getClasses()).get_items(),
+                                    mat_test5, "5 class, 25 most frequent words");
+      test6_accuracy = test_battery(new_parser.get_items_of_classes(mat_test6.getClasses()).get_items(),
+                                    mat_test6, "10 class, 50 most frequent words");
     }
 
     // Display results
     cout << " Test 1 - accuracy " << test1_accuracy << endl;
     cout << " Test 2 - accuracy " << test2_accuracy << endl;
     cout << " Test 3 - accuracy " << test3_accuracy << endl;
+    cout << " Test 4 - accuracy " << test4_accuracy << endl;
+    cout << " Test 5 - accuracy " << test5_accuracy << endl;
+    cout << " Test 6 - accuracy " << test6_accuracy << endl;
   } else if (arg_results.count("run_online") == 1) {
     // TODO: run online benchmarks
     // 1. Create re-classifier to reclassify according to online classifications
