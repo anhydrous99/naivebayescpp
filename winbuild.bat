@@ -26,11 +26,11 @@ IF "%~1"=="getdeps" (
 	powershell -Command "Invoke-WebRequest https://github.com/nlohmann/json/archive/v3.7.3.zip -OutFile json.zip"
 	ECHO GETTING ZLIB
 	powershell -Command "Invoke-WebRequest https://www.zlib.net/zlib1211.zip -OutFile zlib.zip"
-	unzip curl.zip
-	unzip cxxopt.zip
-	unzip eigen.zip
-	unzip json.zip
-	unzip zlib.zip
+	powershell -Command "Expand-Archive curl.zip -DestinationPath ."
+	powershell -Command "Expand-Archive cxxopt.zip -DestinationPath ."
+	powershell -Command "Expand-Archive eigen.zip -DestinationPath ."
+	powershell -Command "Expand-Archive json.zip -DestinationPath ."
+	powershell -Command "Expand-Archive zlib.zip -DestinationPath ."
 	DEL curl.zip
 	DEL cxxopt.zip
 	DEL eigen.zip
@@ -43,6 +43,10 @@ IF "%~1"=="getdeps" (
 	MOVE zlib-1.2.11 zlib
 	POPD
 	EXIT /B
+)
+IF "%~1"=="newmininewsgroups" (
+    MKDIR build
+    powershell -Command "Invoke-WebRequest https://archive.ics.uci.edu/ml/machine-learning-databases/20newsgroups-mld/mini_newsgroups.tar.gz -OutFile mini_newsgroups.tar.gz"
 )
 
 SETLOCAL enabledelayedexpansion
